@@ -1,0 +1,5 @@
+resource_group_name  = "rg-incforstartup-tfstate"
+storage_account_name = "incforstartupstate001"
+container_name       = "tfstate"
+key                  = "github-identity/terraform.tfstate"
+use_azuread_auth     = true

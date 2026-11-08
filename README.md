@@ -34,3 +34,5 @@ Consulta [CONTRIBUTING.md](CONTRIBUTING.md) i [l’estat de la infraestructura](
 ## Azure i Terraform
 
 Consulta el [procediment d’infraestructura](docs/infrastructure.md) i el [context del projecte](docs/project-context.md). Les validacions Terraform utilitzen la versió 1.13.5; GitHub Actions comprova format, configuració i proves simulades sense credencials Azure.
+
+La [vinculació GitHub–Azure amb OIDC](docs/github-azure.md) utilitza una identitat administrada i un entorn GitHub `dev`, sense secrets de client.

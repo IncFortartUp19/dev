@@ -2,11 +2,11 @@
 
 ## Què es crea
 
-`infra/terraform/bootstrap` crea un grup de recursos, un Storage Account Standard LRS i el contenidor privat `tfstate`. L’estat utilitza autenticació Entra ID, sense claus compartides; té versionat, retenció de 30 dies i protecció Terraform contra destrucció de l’emmagatzematge i el contenidor. El backend Azure proporciona bloqueig de l’estat mitjançant leases.
+`infra/terraform/bootstrap` crea un grup de recursos, un Storage Account Standard LRS i els contenidors privats `tfstate` (bootstrap i identitat) i `tfstate-dev` (desenvolupament). L’estat utilitza autenticació Entra ID, sense claus compartides; té versionat, retenció de 30 dies i protecció Terraform contra destrucció de l’emmagatzematge i el contenidor. El backend Azure proporciona bloqueig de l’estat mitjançant leases.
 
 `infra/terraform/environments/dev` crea un grup de recursos, Log Analytics amb retenció de 30 dies i límit diari d’ingesta d’1 GB, i Key Vault amb RBAC, protecció de purga i accés públic desactivat. La quota de logs no és un límit global de despesa d’Azure. Encara no hi ha fonts de logs connectades.
 
-La regió provisional és `westeurope`; es pot canviar abans del primer apply. Aquests recursos poden generar costos. La base no crea aplicacions, bases de dades, usuaris ni credencials i manté `developer` sense canvis.
+La regió acordada és `westeurope`. La rèplica i la recuperació de desastres es decidiran més endavant. Aquests recursos poden generar costos. La base no crea aplicacions, bases de dades, usuaris ni credencials i manté `developer` sense canvis.
 
 ## Requisits
 
@@ -30,7 +30,7 @@ terraform validate
 
 A `infra/terraform/environments/dev`, executa també `terraform test`. Les proves utilitzen un proveïdor simulat: comproven les propietats de seguretat i la validació d’entrades sense crear recursos. No substitueixen un pla contra Azure.
 
-GitHub Actions executa aquestes comprovacions i no necessita secrets Azure. No hi ha `apply` automàtic ni identitat OIDC creada.
+GitHub Actions executa aquestes comprovacions i no necessita secrets Azure. No hi ha `apply` automàtic. La [identitat OIDC](github-azure.md) es configura separadament.
 
 ## 1. Inicialitzar l’estat remot
 
@@ -60,7 +60,7 @@ El bootstrap comença amb estat local. Conserva’l protegit fins a migrar-lo: n
 
 ## 2. Migrar també l’estat del bootstrap
 
-Copia els valors de `backend_config` a un fitxer local `backend.hcl` dins de `bootstrap`, però utilitza `key = "bootstrap/terraform.tfstate"`. Afegeix un fitxer `backend.tf` amb aquest contingut:
+Copia els valors de `backend_config` a un fitxer local `backend.hcl` dins de `bootstrap`, però utilitza `container_name = "tfstate"` i `key = "bootstrap/terraform.tfstate"`. Afegeix un fitxer `backend.tf` amb aquest contingut:
 
 ```hcl
 terraform {
@@ -86,7 +86,7 @@ cp backend.hcl.example backend.hcl
 cp terraform.tfvars.example terraform.tfvars
 ```
 
-Edita els fitxers amb els valors reals del bootstrap, la subscripció i un nom de Key Vault únic globalment. Utilitza la clau d’estat `dev/terraform.tfstate`, diferent de la del bootstrap.
+Edita els fitxers amb els valors reals del bootstrap, la subscripció i un nom de Key Vault únic globalment. Utilitza el contenidor `tfstate-dev` i la clau d’estat `dev/terraform.tfstate`, separats del bootstrap. Si el bootstrap ja s’havia desplegat abans d’afegir aquest contenidor, aplica primer l’actualització del bootstrap. Si dev ja tenia estat al contenidor antic, migra’l amb `terraform init -migrate-state -backend-config=backend.hcl`; no inicialitzis un estat buit sobre recursos existents.
 
 ```bash
 terraform init -backend-config=backend.hcl

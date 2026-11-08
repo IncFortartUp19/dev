@@ -16,7 +16,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        directory: [infra/terraform/bootstrap, infra/terraform/environments/dev]
+        directory: [infra/terraform/bootstrap, infra/terraform/environments/dev, infra/terraform/github-identity]
     defaults:
       run:
         working-directory: ${{ matrix.directory }}
@@ -30,6 +30,6 @@ jobs:
       - run: terraform fmt -check -recursive
       - run: terraform init -backend=false -input=false -lockfile=readonly
       - run: terraform validate
-      - name: Test development foundation without Azure credentials
-        if: matrix.directory == 'infra/terraform/environments/dev'
+      - name: Test configuration without Azure credentials
+        if: matrix.directory != 'infra/terraform/bootstrap'
         run: terraform test

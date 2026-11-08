@@ -1,0 +1,43 @@
+name: Verify Azure connection
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: dev
+    permissions:
+      id-token: write
+    env:
+      AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+    steps:
+      - name: Check required configuration
+        shell: bash
+        run: |
+          for key in AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID; do
+            if [ -z "${!key}" ]; then
+              echo "::error::Configure $key in the GitHub dev environment."
+              exit 1
+            fi
+          done
+      - name: Sign in using GitHub OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Verify subscription and resource access
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_subscription=$(az account show --query id -o tsv)
+          test "$actual_subscription" = "$AZURE_SUBSCRIPTION_ID"
+          az group show --name rg-incforstartup-dev --query '{name:name,location:location}' -o json

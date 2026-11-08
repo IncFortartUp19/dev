@@ -31,3 +31,10 @@ resource "azurerm_storage_container" "state" {
   container_access_type = "private"
   lifecycle { prevent_destroy = true }
 }
+
+resource "azurerm_storage_container" "dev_state" {
+  name                  = "tfstate-dev"
+  storage_account_id    = azurerm_storage_account.state.id
+  container_access_type = "private"
+  lifecycle { prevent_destroy = true }
+}

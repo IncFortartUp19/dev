@@ -12,3 +12,6 @@ terraform-check:
 	terraform -chdir=infra/terraform/environments/dev init -backend=false -input=false -lockfile=readonly
 	terraform -chdir=infra/terraform/environments/dev validate
 	terraform -chdir=infra/terraform/environments/dev test
+	terraform -chdir=infra/terraform/github-identity init -backend=false -input=false -lockfile=readonly
+	terraform -chdir=infra/terraform/github-identity validate
+	terraform -chdir=infra/terraform/github-identity test

@@ -19,6 +19,6 @@ Les dades de mercat, imports i terminis del pla original són hipòtesis de plan
 
 ## Abast d’aquesta primera base d’infraestructura
 
-Backend remot de Terraform, grup de recursos de desenvolupament, Log Analytics i Key Vault. La regió provisional és `westeurope` i es pot configurar.
+Backend remot de Terraform, grup de recursos de desenvolupament, Log Analytics i Key Vault. La regió acordada és `westeurope`. La rèplica i recuperació de desastres a Irlanda o París es definiran més endavant; encara no es configuren.
 
-Encara no es provisionen l’aplicació, PostgreSQL, serveis d’IA, xarxa privada ni identitats de desplegament. El Key Vault no té accés públic: caldrà afegir endpoint privat i connectivitat abans de llegir o escriure secrets. Cap secret es crea amb Terraform.
+Encara no es provisionen l’aplicació, PostgreSQL, serveis d’IA ni xarxa privada. La identitat OIDC de GitHub es defineix separadament i encara s’ha d’activar a Azure. El Key Vault no té accés públic: caldrà afegir endpoint privat i connectivitat abans de llegir o escriure secrets. Cap secret es crea amb Terraform.
