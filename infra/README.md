@@ -1,5 +1,7 @@
-# Infraestructura
+# Infraestructura Azure amb Terraform
 
-Aquest directori allotjarà la configuració de desenvolupament i desplegament quan s’hagin definit la tecnologia i el proveïdor.
+- `terraform/bootstrap`: emmagatzematge remot de l’estat.
+- `terraform/environments/dev`: base de desenvolupament.
+- [Procediment](../docs/infrastructure.md).
 
-No hi ha recursos provisionats. No hi desis secrets ni fitxers d’estat amb dades sensibles.
+No s’ha executat cap desplegament a Azure. Els fitxers d’estat, configuracions locals i plans queden exclosos de Git; els lockfiles de proveïdors sí que es versionen.

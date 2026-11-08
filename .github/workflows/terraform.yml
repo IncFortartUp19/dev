@@ -1,0 +1,35 @@
+name: Terraform
+
+on:
+  push:
+    paths: ['infra/terraform/**', '.github/workflows/terraform.yml']
+  pull_request:
+    paths: ['infra/terraform/**', '.github/workflows/terraform.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        directory: [infra/terraform/bootstrap, infra/terraform/environments/dev]
+    defaults:
+      run:
+        working-directory: ${{ matrix.directory }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.13.5'
+      - run: terraform fmt -check -recursive
+      - run: terraform init -backend=false -input=false -lockfile=readonly
+      - run: terraform validate
+      - name: Test development foundation without Azure credentials
+        if: matrix.directory == 'infra/terraform/environments/dev'
+        run: terraform test

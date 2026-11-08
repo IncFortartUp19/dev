@@ -25,3 +25,11 @@ coverage/
 Thumbs.db
 .idea/
 .vscode/
+
+# Terraform local configuration and plans
+*.tfvars
+*.tfvars.json
+backend.hcl
+.terraform.tfstate.lock.info
+crash.log
+crash.*.log

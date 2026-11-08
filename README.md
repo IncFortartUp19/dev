@@ -1,6 +1,6 @@
 # IncForStartUp — dev
 
-Base de desenvolupament d’IncForStartUp. El repositori comença amb infraestructura de col·laboració i validació; encara no conté una aplicació ni un desplegament.
+Base de desenvolupament d’IncForStartUp, amb infraestructura Azure definida en Terraform. Encara no s’ha desplegat cap recurs ni s’ha implementat l’aplicació.
 
 ## Començar
 
@@ -20,7 +20,7 @@ Si tens Make, també pots executar `make check`.
 | --- | --- |
 | `src/` | Codi de l’aplicació quan es defineixi la tecnologia |
 | `tests/` | Proves de l’aplicació |
-| `infra/` | Configuració d’entorns i desplegament |
+| `infra/` | Terraform: bootstrap de l’estat i entorn Azure de desenvolupament |
 | `scripts/` | Automatització del repositori |
 | `docs/` | Decisions i documentació tècnica |
 | `.github/workflows/` | Comprovacions automàtiques |
@@ -30,3 +30,7 @@ Si tens Make, també pots executar `make check`.
 Crea una branca, executa les comprovacions i obre una pull request cap a `main`. GitHub Actions executa les mateixes comprovacions en cada push i pull request. La protecció de branques no està configurada per aquests fitxers.
 
 Consulta [CONTRIBUTING.md](CONTRIBUTING.md) i [l’estat de la infraestructura](docs/infrastructure.md).
+
+## Azure i Terraform
+
+Consulta el [procediment d’infraestructura](docs/infrastructure.md) i el [context del projecte](docs/project-context.md). Les validacions Terraform utilitzen la versió 1.13.5; GitHub Actions comprova format, configuració i proves simulades sense credencials Azure.
