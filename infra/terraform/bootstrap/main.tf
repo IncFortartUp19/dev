@@ -1,13 +1,13 @@
 resource "azurerm_resource_group" "state" {
   name     = "rg-${var.name_prefix}-tfstate"
-  location = var.location
+  location = coalesce(var.resource_group_location, var.location)
   tags     = { project = "IncForStartUp", environment = "bootstrap", managed_by = "terraform" }
 }
 
 resource "azurerm_storage_account" "state" {
   name                            = var.state_storage_account_name
   resource_group_name             = azurerm_resource_group.state.name
-  location                        = azurerm_resource_group.state.location
+  location                        = var.location
   account_tier                    = "Standard"
   account_replication_type        = "LRS"
   min_tls_version                 = "TLS1_2"

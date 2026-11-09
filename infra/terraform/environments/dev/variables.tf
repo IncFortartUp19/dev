@@ -14,8 +14,8 @@ variable "name_prefix" {
 
 variable "location" {
   type        = string
-  default     = "westeurope"
-  description = "Initial EU region; confirm availability before deployment."
+  default     = "francecentral"
+  description = "Agreed launch region: France Central (Paris); subscription eligibility must be confirmed by Azure."
 }
 
 variable "key_vault_name" {

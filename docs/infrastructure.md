@@ -6,7 +6,7 @@
 
 `infra/terraform/environments/dev` crea un grup de recursos, Log Analytics amb retenció de 30 dies i límit diari d’ingesta d’1 GB, i Key Vault amb RBAC, protecció de purga i accés públic desactivat. La quota de logs no és un límit global de despesa d’Azure. Encara no hi ha fonts de logs connectades.
 
-La regió acordada és `westeurope`. La rèplica i la recuperació de desastres es decidiran més endavant. Aquests recursos poden generar costos. La base no crea aplicacions, bases de dades, usuaris ni credencials i manté `developer` sense canvis.
+La regió acordada és `francecentral`. La rèplica i la recuperació de desastres es decidiran més endavant. Aquests recursos poden generar costos. La base no crea aplicacions, bases de dades, usuaris ni credencials i manté `developer` sense canvis.
 
 ## Requisits
 
@@ -104,3 +104,18 @@ Revisa el pla abans d’executar apply. El Key Vault té accés públic desactiv
 4. Configurar federació OIDC de GitHub a Azure amb permisos limitats i entorn protegit, abans d’automatitzar desplegaments.
 
 No es guarden contrasenyes ni secrets en `.tfvars`, workflows o arguments de backend. Els plans i els estats poden contenir dades sensibles, encara que les sortides estiguin marcades com a sensibles.
+
+## Canvi de regió a París
+
+La creació del Storage Account a West Europe va ser rebutjada per Azure amb `RequestDisallowedByAzure` i `locationineligible`. L’usuari ha acordat France Central (`francecentral`) com a regió principal de llançament. L’accés efectiu a aquesta regió encara s’ha de comprovar amb Azure.
+
+El grup de bootstrap ja existent `rg-incforstartup-tfstate` es conserva a `westeurope`: la ubicació del grup descriu les seves metadades i no obliga els recursos que conté a utilitzar la mateixa regió. En el seu `terraform.tfvars` local cal establir:
+
+```hcl
+location                = "francecentral"
+resource_group_location = "westeurope"
+```
+
+Per als desplegaments nous que no tinguin aquest grup creat, no cal l’override `resource_group_location`: tant el grup com l’emmagatzematge es crearan a París.
+
+Després d’actualitzar el checkout, genera un pla nou. No reutilitzis el pla anterior de West Europe. En el bootstrap existent s’esperen tres creacions i cap modificació ni destrucció. L’entorn dev encara no desplegat utilitzarà `location = "francecentral"`.

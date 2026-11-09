@@ -14,7 +14,7 @@ variable "name_prefix" {
 
 variable "location" {
   type    = string
-  default = "westeurope"
+  default = "francecentral"
 }
 
 variable "state_storage_account_name" {
@@ -24,4 +24,10 @@ variable "state_storage_account_name" {
     condition     = can(regex("^[a-z0-9]{3,24}$", var.state_storage_account_name))
     error_message = "Use 3–24 lowercase letters or digits."
   }
+}
+
+variable "resource_group_location" {
+  type        = string
+  default     = null
+  description = "Optional location of an existing bootstrap resource group; independent of the storage region."
 }

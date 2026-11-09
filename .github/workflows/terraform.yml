@@ -31,5 +31,4 @@ jobs:
       - run: terraform init -backend=false -input=false -lockfile=readonly
       - run: terraform validate
       - name: Test configuration without Azure credentials
-        if: matrix.directory != 'infra/terraform/bootstrap'
         run: terraform test

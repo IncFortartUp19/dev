@@ -9,6 +9,7 @@ terraform-check:
 	terraform fmt -check -recursive infra/terraform
 	terraform -chdir=infra/terraform/bootstrap init -backend=false -input=false -lockfile=readonly
 	terraform -chdir=infra/terraform/bootstrap validate
+	terraform -chdir=infra/terraform/bootstrap test
 	terraform -chdir=infra/terraform/environments/dev init -backend=false -input=false -lockfile=readonly
 	terraform -chdir=infra/terraform/environments/dev validate
 	terraform -chdir=infra/terraform/environments/dev test

@@ -3,7 +3,7 @@ mock_provider "azurerm" {
     defaults = {
       id       = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-incforstartup-dev"
       name     = "rg-incforstartup-dev"
-      location = "westeurope"
+      location = "francecentral"
     }
   }
   mock_data "azurerm_storage_account" {
