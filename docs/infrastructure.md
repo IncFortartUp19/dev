@@ -119,3 +119,13 @@ resource_group_location = "westeurope"
 Per als desplegaments nous que no tinguin aquest grup creat, no cal l’override `resource_group_location`: tant el grup com l’emmagatzematge es crearan a París.
 
 Després d’actualitzar el checkout, genera un pla nou. No reutilitzis el pla anterior de West Europe. En el bootstrap existent s’esperen tres creacions i cap modificació ni destrucció. L’entorn dev encara no desplegat utilitzarà `location = "francecentral"`.
+
+## Cloud Shell: audience MSI no suportada
+
+Si el proveïdor falla en consultar `static website properties` amb `Audience ...blob.core.windows.net is not a supported MSI token audience`, el compte pot haver-se creat correctament. Comprova el seu `provisioningState` amb `az storage account show` i la seva presència amb `terraform state list` abans de repetir cap operació.
+
+El bootstrap utilitza `features.storage.data_plane_available = false` per evitar les consultes de website estàtic i cues que no fem servir. Amb AzureRM 4.81.0, el versionat i les retencions de blobs es gestionen via Resource Manager, i els contenidors utilitzen també aquesta API perquè es configuren amb `storage_account_id`. No s’habiliten claus compartides ni es desactiven les proteccions d’Entra ID.
+
+Actualitza el checkout i genera un pla nou. Si el compte ja és a l’estat, no l’importis ni l’eliminis. En un error parcial el pla pot incloure una actualització de les propietats pendents del compte, a més de crear els dos contenidors. No apliquis un pla que proposi substituir o destruir el compte.
+
+Aquesta correcció afecta les operacions del proveïdor AzureRM; l’accés al backend remot s’ha de validar per separat en migrar l’estat.
