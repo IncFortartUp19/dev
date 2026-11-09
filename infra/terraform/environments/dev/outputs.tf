@@ -17,3 +17,15 @@ output "virtual_network_id" {
 output "private_endpoint_subnet_id" {
   value = azurerm_subnet.private_endpoints.id
 }
+
+output "container_registry_name" {
+  value = azurerm_container_registry.dev.name
+}
+
+output "container_registry_login_server" {
+  value = azurerm_container_registry.dev.login_server
+}
+
+output "container_app_environment_id" {
+  value = azurerm_container_app_environment.dev.id
+}
