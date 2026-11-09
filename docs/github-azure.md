@@ -6,7 +6,7 @@ Identitat administrada assignada per l’usuari `id-incforstartup-github-dev`, a
 
 - Emissor: `https://token.actions.githubusercontent.com`.
 - Audiència: `api://AzureADTokenExchange`.
-- Subjecte exacte: `repo:IncFortartUp19/dev:environment:dev`.
+- Subjecte exacte: `repo:IncFortartUp19@354242787/dev@1450737434:environment:dev`.
 - Contributor només al grup de recursos `rg-incforstartup-dev`.
 - Storage Blob Data Contributor només al contenidor `tfstate-dev`.
 
@@ -68,3 +68,9 @@ Si retorna AADSTS70021, comprova emissor, audiència i subjecte exactes. Si reto
 ## Estat actual
 
 Codi i workflow preparats. La vinculació només estarà activa després de crear la identitat a Azure, configurar l’entorn GitHub i obtenir una execució correcta del workflow. No s’ha configurat cap replica ni site recovery.
+
+## Correspondència exacta del subjecte OIDC
+
+El primer intent real del workflow ha mostrat el subjecte `repo:IncFortartUp19@354242787/dev@1450737434:environment:dev`. La credencial federada ha de coincidir exactament amb aquest valor, incloent-hi els IDs, l’emissor i l’audiència. La configuració anterior sense IDs provocava `AADSTS700213`.
+
+Per actualitzar una vinculació ja creada, fes `git pull --ff-only` i executa `terraform plan -out=github-subject.tfplan` des de `infra/terraform/github-identity`, amb el backend existent inicialitzat. Revisa que només s’actualitzi el subjecte de la credencial; aplica aquest pla i torna a executar el workflow. No cal `az logout`, crear secrets ni substituir la identitat administrada.

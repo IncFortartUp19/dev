@@ -22,7 +22,7 @@ run "restricted_federation" {
   command = plan
 
   assert {
-    condition     = azurerm_federated_identity_credential.github.subject == "repo:IncFortartUp19/dev:environment:dev" && azurerm_federated_identity_credential.github.issuer == "https://token.actions.githubusercontent.com" && azurerm_federated_identity_credential.github.audience == tolist(["api://AzureADTokenExchange"])
+    condition     = azurerm_federated_identity_credential.github.subject == "repo:IncFortartUp19@354242787/dev@1450737434:environment:dev" && azurerm_federated_identity_credential.github.issuer == "https://token.actions.githubusercontent.com" && azurerm_federated_identity_credential.github.audience == tolist(["api://AzureADTokenExchange"])
     error_message = "Federation must trust only this repository and dev environment through GitHub OIDC."
   }
 

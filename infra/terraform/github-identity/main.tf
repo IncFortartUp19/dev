@@ -23,7 +23,7 @@ resource "azurerm_federated_identity_credential" "github" {
   parent_id = azurerm_user_assigned_identity.github.id
   audience  = ["api://AzureADTokenExchange"]
   issuer    = "https://token.actions.githubusercontent.com"
-  subject   = "repo:IncFortartUp19/dev:environment:dev"
+  subject   = "repo:IncFortartUp19@354242787/dev@1450737434:environment:dev"
 }
 
 resource "azurerm_role_assignment" "resources" {
