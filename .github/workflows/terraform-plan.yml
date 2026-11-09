@@ -1,0 +1,100 @@
+name: Terraform plan dev
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: terraform-dev
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: dev
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        shell: bash
+        working-directory: infra/terraform/environments/dev
+    env:
+      TF_IN_AUTOMATION: 'true'
+      TF_INPUT: 'false'
+      ARM_USE_OIDC: 'true'
+      ARM_USE_AZUREAD: 'true'
+      ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      TF_VAR_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      TF_VAR_location: francecentral
+      TF_VAR_key_vault_name: kv-incfs-e299e7e6628f
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check Azure configuration
+        run: |
+          set -euo pipefail
+          for key in ARM_CLIENT_ID ARM_TENANT_ID ARM_SUBSCRIPTION_ID; do
+            if [ -z "${!key}" ]; then
+              echo "::error::Configure Azure variables in the GitHub dev environment ($key is empty)."
+              exit 1
+            fi
+          done
+          test "$ARM_SUBSCRIPTION_ID" = 'e299e7e6-628f-415a-955e-b77daea335a8'
+          test "$ARM_TENANT_ID" = '935a6172-dc5e-4934-80b5-573139011df9'
+      - name: Sign in using GitHub OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.13.5'
+          terraform_wrapper: false
+      - name: Check format
+        run: terraform fmt -check -recursive
+      - name: Initialize remote dev state
+        run: |
+          terraform init -input=false -lockfile=readonly \
+            -backend-config="subscription_id=$ARM_SUBSCRIPTION_ID" \
+            -backend-config="tenant_id=$ARM_TENANT_ID" \
+            -backend-config='resource_group_name=rg-incforstartup-tfstate' \
+            -backend-config='storage_account_name=stincfse299e7e6628f415a' \
+            -backend-config='container_name=tfstate-dev' \
+            -backend-config='key=dev/terraform.tfstate' \
+            -backend-config='use_azuread_auth=true' \
+            -backend-config='use_oidc=true'
+      - name: Validate configuration
+        run: terraform validate -no-color
+      - name: Plan development infrastructure
+        id: plan
+        run: |
+          set +e
+          terraform plan -input=false -no-color -lock-timeout=120s \
+            -detailed-exitcode -out="$RUNNER_TEMP/dev.tfplan"
+          plan_exit=$?
+          set -e
+          case "$plan_exit" in
+            0|2) echo "exitcode=$plan_exit" >> "$GITHUB_OUTPUT" ;;
+            *) echo '::error::Terraform plan failed. Check the plan logs.'; exit "$plan_exit" ;;
+          esac
+      - name: Summarize resource changes
+        run: |
+          set -euo pipefail
+          terraform show -json "$RUNNER_TEMP/dev.tfplan" \
+            | python3 "$GITHUB_WORKSPACE/scripts/summarize_tf_plan.py" >> "$GITHUB_STEP_SUMMARY"
+          echo "Source commit: $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo 'This workflow does not apply changes. Binary plans and JSON state are not uploaded as artifacts.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Remove temporary plan
+        if: always()
+        run: rm -f "$RUNNER_TEMP/dev.tfplan"

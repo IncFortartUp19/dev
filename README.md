@@ -1,6 +1,6 @@
 # IncForStartUp — dev
 
-Base de desenvolupament d’IncForStartUp, amb infraestructura Azure definida en Terraform. Encara no s’ha desplegat cap recurs ni s’ha implementat l’aplicació.
+Base de desenvolupament d’IncForStartUp, amb infraestructura Azure definida en Terraform. El bootstrap, el grup dev i la identitat OIDC ja estan desplegats; l’aplicació encara està pendent.
 
 ## Començar
 
@@ -36,3 +36,5 @@ Consulta [CONTRIBUTING.md](CONTRIBUTING.md) i [l’estat de la infraestructura](
 Consulta el [procediment d’infraestructura](docs/infrastructure.md) i el [context del projecte](docs/project-context.md). Les validacions Terraform utilitzen la versió 1.13.5; GitHub Actions comprova format, configuració i proves simulades sense credencials Azure.
 
 La [vinculació GitHub–Azure amb OIDC](docs/github-azure.md) utilitza una identitat administrada i un entorn GitHub `dev`, sense secrets de client.
+
+El [workflow Terraform plan dev](docs/terraform-plan.md) calcula manualment el pla complet des de GitHub amb OIDC, sense executar apply.
