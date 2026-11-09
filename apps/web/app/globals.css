@@ -1144,6 +1144,7 @@ main {
   margin-top: 17px;
 }
 .rubric-row {
+  flex-direction: row;
   display: flex !important;
   align-items: center;
   justify-content: space-between;
