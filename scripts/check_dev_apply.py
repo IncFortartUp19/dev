@@ -1,10 +1,16 @@
-"""Allow only the two reviewed dev resource creations, or an unchanged plan."""
+"""Allow only the five reviewed private-network creations, or an unchanged plan."""
 
 import json
 import sys
 
 
-ALLOWED_CREATES = {"azurerm_key_vault.dev", "azurerm_log_analytics_workspace.dev"}
+ALLOWED_CREATES = {
+    "azurerm_virtual_network.dev",
+    "azurerm_subnet.private_endpoints",
+    "azurerm_private_dns_zone.key_vault",
+    "azurerm_private_dns_zone_virtual_network_link.key_vault",
+    "azurerm_private_endpoint.key_vault",
+}
 
 
 def main():

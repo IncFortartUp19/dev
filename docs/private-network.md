@@ -10,6 +10,6 @@ El pla inicial hauria de crear cinc recursos: VNet, subxarxa, zona DNS privada, 
 
 Abans de l’apply, un operador de la subscripció ha de confirmar que `Microsoft.Network` està registrat. La identitat GitHub no pot registrar proveïdors de subscripció.
 
-La comprovació actual de l’apply només permet les dues creacions de la fase anterior; bloquejarà aquests recursos fins que es revisi i s’autoritzi el nou pla. El workflow de plan sí que pot calcular-los.
+L’usuari ha autoritzat el desplegament del pla de cinc creacions. La comprovació de l’apply permet aquestes cinc adreces de recursos i bloqueja qualsevol actualització, destrucció o altra creació.
 
 La comprovació real de connectivitat i DNS es farà quan hi hagi una aplicació o executor dins de la xarxa. Un pla correcte no demostra encara accés als secrets.
