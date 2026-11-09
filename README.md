@@ -38,3 +38,5 @@ Consulta el [procediment d’infraestructura](docs/infrastructure.md) i el [cont
 La [vinculació GitHub–Azure amb OIDC](docs/github-azure.md) utilitza una identitat administrada i un entorn GitHub `dev`, sense secrets de client.
 
 El [workflow Terraform plan dev](docs/terraform-plan.md) calcula manualment el pla complet des de GitHub amb OIDC, sense executar apply.
+
+La [xarxa privada de dev](docs/private-network.md) prepara l’accés privat al Key Vault; consulta el pla abans de desplegar-la.

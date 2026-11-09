@@ -9,3 +9,11 @@ output "key_vault_id" {
 output "log_analytics_workspace_id" {
   value = azurerm_log_analytics_workspace.dev.id
 }
+
+output "virtual_network_id" {
+  value = azurerm_virtual_network.dev.id
+}
+
+output "private_endpoint_subnet_id" {
+  value = azurerm_subnet.private_endpoints.id
+}

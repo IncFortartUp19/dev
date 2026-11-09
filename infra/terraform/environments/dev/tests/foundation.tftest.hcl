@@ -28,3 +28,17 @@ run "reject_invalid_prefix" {
   variables { name_prefix = "INVALID PREFIX" }
   expect_failures = [var.name_prefix]
 }
+
+run "private_key_vault_access" {
+  command = plan
+
+  assert {
+    condition     = azurerm_private_dns_zone.key_vault.name == "privatelink.vaultcore.azure.net" && !azurerm_private_dns_zone_virtual_network_link.key_vault.registration_enabled
+    error_message = "Key Vault private DNS must use its dedicated zone without VM auto-registration."
+  }
+
+  assert {
+    condition     = azurerm_private_endpoint.key_vault.private_service_connection[0].subresource_names == tolist(["vault"]) && !azurerm_private_endpoint.key_vault.private_service_connection[0].is_manual_connection && !azurerm_key_vault.dev.public_network_access_enabled
+    error_message = "The private connection must target the vault without enabling public vault access."
+  }
+}
