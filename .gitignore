@@ -33,3 +33,9 @@ backend.hcl
 .terraform.tfstate.lock.info
 crash.log
 crash.*.log
+
+# Next.js and browser QA output
+.next/
+*.tsbuildinfo
+playwright-report/
+test-results/

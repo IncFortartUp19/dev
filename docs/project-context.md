@@ -22,3 +22,9 @@ Les dades de mercat, imports i terminis del pla original són hipòtesis de plan
 Backend remot de Terraform, grup de recursos de desenvolupament, Log Analytics i Key Vault. La regió acordada és `francecentral`. París és la regió principal de llançament. La rèplica i recuperació de desastres es definiran més endavant; encara no es configuren.
 
 Encara no es provisionen l’aplicació, PostgreSQL, serveis d’IA ni xarxa privada. La identitat OIDC de GitHub es defineix separadament i encara s’ha d’activar a Azure. El Key Vault no té accés públic: caldrà afegir endpoint privat i connectivitat abans de llegir o escriure secrets. Cap secret es crea amb Terraform.
+
+## Reorientació acordada: Campus
+
+L’usuari ha prioritzat l’adopció directa per professors i alumnes. La fase inicial és gestionar projectes universitaris, entregues i avaluacions; les pimes, grans empreses/inversió i l’expansió geogràfica són fases posteriors. Els contactes universitaris poden ajudar a reclutar participants, sense condicionar el producte a una venda institucional.
+
+S’ha començat un prototip Next.js a `apps/web`, amb dades de mostra i persistència local. No es publica encara a Azure ni es connecta IA. L’allotjament Container Apps/ACR continua pendent de desplegament. Consulta `docs/product/campus-mvp.md` i `docs/product/data-model.md` per a l’abast i el model compartit.

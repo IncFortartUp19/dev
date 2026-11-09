@@ -1,6 +1,6 @@
 # IncForStartUp — dev
 
-Base de desenvolupament d’IncForStartUp, amb infraestructura Azure definida en Terraform. El bootstrap, el grup dev i la identitat OIDC ja estan desplegats; l’aplicació encara està pendent.
+Base de desenvolupament d’IncForStartUp, amb infraestructura Azure definida en Terraform. El bootstrap, el grup dev i la identitat OIDC ja estan desplegats; la primera interfície Campus està a `apps/web`, encara sense publicar a Azure.
 
 ## Començar
 
@@ -42,3 +42,7 @@ El [workflow Terraform plan dev](docs/terraform-plan.md) calcula manualment el p
 La [xarxa privada de dev](docs/private-network.md) prepara l’accés privat al Key Vault; consulta el pla abans de desplegar-la.
 
 La [base d’allotjament Container Apps](docs/application-hosting.md) prepara l’entorn d’execució i el registre d’imatges per a la futura web i API.
+
+## IncForStartUp Campus
+
+El [prototip universitari](apps/web/README.md) permet provar espais docents, projectes, entregues i feedback amb rúbrica. Utilitza dades de mostra i emmagatzematge local; no té autenticació real ni IA connectada. Consulta [l’abast del MVP](docs/product/campus-mvp.md) i el [model de dades proposat](docs/product/data-model.md).
