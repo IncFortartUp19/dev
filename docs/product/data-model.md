@@ -1,6 +1,6 @@
 # Model de dades proposat — Campus
 
-Aquest és el disseny per al backend compartit, no una base de dades ja desplegada. El prototip utilitza les estructures simplificades de `apps/web/lib/model.ts`.
+Aquest és el model objectiu del backend compartit. La primera implementació i migració són a `apps/api`; encara no s’han desplegat al núvol. El prototip utilitza les estructures simplificades de `apps/web/lib/model.ts`.
 
 | Entitat | Camps principals | Relacions i restriccions |
 | --- | --- | --- |
@@ -54,3 +54,7 @@ Cada consulta, descàrrega i mutació haurà de verificar aquestes relacions al 
 ## Publicació i IA: fora del primer backend
 
 No es crearà cap còpia pública d’un treball en presentar-lo ni en rebre una bona puntuació. L’aparador requerirà un flux específic d’autoritzacions i retirada. L’ús d’un assistent sobre documents haurà de limitar-se al projecte autoritzat; l’ús per entrenament s’ha de tractar separadament. Els noms dels membres registren participació, sense determinar automàticament la titularitat legal del treball.
+
+## Primera implementació disponible
+
+`apps/api` implementa usuaris provisionats des d’OIDC, espais, membresies, equips, invitacions d’un sol ús, projectes privats, entregues textuals versionades, revisions amb snapshot de rúbrica i auditoria d’accions. La rúbrica inicial és fixa i la revisió publicada és immutable. `SubmissionFile`, rúbriques configurables i el flux de correcció d’avaluacions resten pendents. Consulta el README de l’API per a les operacions, proves i límits exactes.

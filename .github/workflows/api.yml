@@ -1,0 +1,50 @@
+name: Campus API
+
+on:
+  push:
+    paths: ['apps/api/**', '.github/workflows/api.yml']
+  pull_request:
+    paths: ['apps/api/**', '.github/workflows/api.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [sqlite, postgres]
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: campus
+          POSTGRES_PASSWORD: campus-ci-only
+          POSTGRES_DB: campus_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U campus -d campus_test"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    defaults:
+      run:
+        working-directory: apps/api
+    env:
+      TEST_DATABASE_URL: ${{ matrix.database == 'postgres' && 'postgresql+psycopg://campus:campus-ci-only@localhost:5432/campus_test' || '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.13.5'
+      - run: uv sync --locked
+      - run: uv run ruff check campus_api migrations tests
+      - run: uv run ruff format --check campus_api migrations tests
+      - run: uv run pytest -q

@@ -39,3 +39,7 @@ crash.*.log
 *.tsbuildinfo
 playwright-report/
 test-results/
+
+# API local databases and tooling
+.data/
+.ruff_cache/
