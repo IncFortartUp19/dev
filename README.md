@@ -46,3 +46,9 @@ La [base d’allotjament Container Apps](docs/application-hosting.md) prepara l�
 ## IncForStartUp Campus
 
 El [prototip universitari](apps/web/README.md) permet provar espais docents, projectes, entregues i feedback amb rúbrica. Utilitza dades de mostra i emmagatzematge local; no té autenticació real ni IA connectada. Consulta [l’abast del MVP](docs/product/campus-mvp.md) i el [model de dades proposat](docs/product/data-model.md).
+
+## API i projectes vinculats
+
+La [Campus API](apps/api/README.md) afegeix persistència, identitat OIDC i permisos d’espai/equip, amb migracions i proves SQLite/PostgreSQL. Encara no està connectada al prototip web ni desplegada a Azure.
+
+[BeFirst](docs/projects/be-first.md) és el primer projecte vinculat a la secció Projectes incubats. La fitxa no inclou el seu codi privat ni dades internes.

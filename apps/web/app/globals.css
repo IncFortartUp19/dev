@@ -1903,3 +1903,138 @@ textarea {
     font-size: 12px;
   }
 }
+
+.incubator-intro {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: #e8eddd;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 28px;
+}
+.incubator-intro p {
+  max-width: 700px;
+  color: #617653;
+  line-height: 1.8;
+}
+.incubator-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 420px));
+  gap: 24px;
+}
+.incubator-card {
+  padding: 26px;
+}
+.incubator-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  gap: 12px;
+}
+.project-monogram {
+  display: grid;
+  place-items: center;
+  background: #25382f;
+  color: #e8eddd;
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-weight: 800;
+  width: 68px;
+  height: 68px;
+  border-radius: 12px;
+}
+.incubator-card h2 {
+  font-size: 28px;
+  margin: 10px 0;
+  letter-spacing: -1px;
+}
+.incubator-card p,
+.incubator-detail p,
+.incubator-detail li {
+  color: #738067;
+  font-size: 13px;
+  line-height: 1.9;
+}
+.incubator-domain {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: #687c5b;
+  font-size: 12px;
+  padding: 18px 0;
+}
+.incubator-card footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+  gap: 15px;
+}
+.incubator-card footer > span {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 11px;
+  color: #7b886f;
+}
+.incubator-card .text-button {
+  font-size: 12px;
+}
+.incubator-detail {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 24px;
+}
+.incubator-detail h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+.incubator-detail ul {
+  padding-left: 18px;
+}
+.incubator-facts {
+  margin-top: 25px;
+}
+.incubator-facts > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  padding: 16px 0;
+  gap: 20px;
+}
+.incubator-facts span {
+  color: #879479;
+  font-size: 12px;
+}
+.incubator-facts strong {
+  font-size: 12px;
+  text-align: right;
+}
+@media (max-width: 900px) {
+  .incubator-detail {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .incubator-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .incubator-card {
+    padding: 20px;
+  }
+  .incubator-intro {
+    align-items: flex-start;
+    padding: 18px;
+    gap: 12px;
+  }
+  .incubator-intro p {
+    font-size: 12px;
+  }
+  .incubator-facts > div {
+    align-items: flex-start;
+  }
+}

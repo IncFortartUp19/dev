@@ -140,15 +140,13 @@ test("too many files shows an actionable error inside the delivery dialog", asyn
   await page
     .getByLabel("Què heu treballat?")
     .fill("Entrega amb un nombre de documents superior al límit.");
-  await page
-    .locator("input[type=file]")
-    .setInputFiles(
-      Array.from({ length: 6 }, (_, i) => ({
-        name: `fitxer-${i}.txt`,
-        mimeType: "text/plain",
-        buffer: Buffer.from("prova"),
-      })),
-    );
+  await page.locator("input[type=file]").setInputFiles(
+    Array.from({ length: 6 }, (_, i) => ({
+      name: `fitxer-${i}.txt`,
+      mimeType: "text/plain",
+      buffer: Buffer.from("prova"),
+    })),
+  );
   await page
     .getByRole("button", { name: "Presenta l’entrega", exact: true })
     .click();
@@ -157,4 +155,38 @@ test("too many files shows an actionable error inside the delivery dialog", asyn
   );
   await page.getByRole("button", { name: "Cancel·la", exact: true }).click();
   await expect(page.getByText("2 versions", { exact: true })).toBeVisible();
+});
+
+test("BeFirst has a separate profile without exposing private code or school submissions", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Projectes incubats", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Projectes incubats." }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "BeFirst", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Veure fitxa", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "BeFirst." })).toBeVisible();
+  await expect(page.getByText("befirst90.com", { exact: true })).toBeVisible();
+  await expect(page.locator("main a[href*='github.com']")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Nova entrega", exact: true }),
+  ).toHaveCount(0);
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await page
+    .getByRole("button", { name: "Torna als projectes incubats" })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Projectes incubats." }),
+  ).toBeVisible();
 });

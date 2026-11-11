@@ -47,9 +47,15 @@ import {
   type Store,
 } from "../lib/model";
 import { downloadFile, saveFiles } from "../lib/files";
+import { IncubatedProjects } from "../components/incubated-projects";
 
 const KEY = "incforstartup-campus-v1";
-type View = "Resum" | "Projectes" | "Espais docents" | "Entregues";
+type View =
+  | "Resum"
+  | "Projectes"
+  | "Espais docents"
+  | "Entregues"
+  | "Projectes incubats";
 type ModalName = "space" | "project" | "delivery" | "join" | "help" | null;
 const uid = () => crypto.randomUUID();
 const date = (value: string) =>
@@ -433,6 +439,7 @@ export default function Campus() {
               { title: "Projectes", Icon: FolderOpen },
               { title: "Espais docents", Icon: BookOpen },
               { title: "Entregues", Icon: FileText },
+              { title: "Projectes incubats", Icon: Sprout },
             ] as const
           ).map(({ title, Icon }) => (
             <button
@@ -568,7 +575,9 @@ export default function Campus() {
               </button>
             </div>
           )}
-          {project ? (
+          {view === "Projectes incubats" ? (
+            <IncubatedProjects />
+          ) : project ? (
             <>
               <button
                 className="text-button back"

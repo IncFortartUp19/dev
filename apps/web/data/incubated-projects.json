@@ -1,0 +1,16 @@
+[
+  {
+    "id": "befirst",
+    "name": "BeFirst",
+    "domain": "befirst90.com",
+    "stage": "En desenvolupament",
+    "relationship": "Projecte pilot vinculat",
+    "summary": "Un projecte independent que s’incorpora a l’ecosistema IncForStartUp per documentar el seu recorregut i compartir aprenentatges.",
+    "codeVisibility": "private",
+    "publicHighlights": [
+      "Identitat i domini propis",
+      "Desenvolupament independent",
+      "Codi font privat"
+    ]
+  }
+]

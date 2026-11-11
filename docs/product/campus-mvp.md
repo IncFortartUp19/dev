@@ -52,3 +52,9 @@ Temps fins a crear un projecte i presentar la primera versió; percentatge d’e
 ## Infraestructura
 
 Es conserva Azure/Terraform i France Central. Aquesta fase no aplica la base Container Apps/ACR pendent ni crea recursos nous. El prototip no té una URL Azure publicada.
+
+## Increment de backend
+
+S’ha afegit una API FastAPI amb migracions i permisos per espai/equip a `apps/api`. La interfície continua utilitzant dades locals fins que connectem el login i l’API. Les invitacions reals existeixen a l’API, però els codis del prototip continuen sent demostratius. Les entregues de l’API són textuals; la càrrega de fitxers al servidor resta pendent.
+
+La secció Projectes incubats presenta BeFirst amb nom i domini facilitats pel promotor. És una fitxa curada, no una entrega acadèmica ni una importació del seu codi privat.

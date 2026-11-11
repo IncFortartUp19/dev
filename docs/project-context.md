@@ -28,3 +28,9 @@ Encara no es provisionen l’aplicació, PostgreSQL, serveis d’IA ni xarxa pri
 L’usuari ha prioritzat l’adopció directa per professors i alumnes. La fase inicial és gestionar projectes universitaris, entregues i avaluacions; les pimes, grans empreses/inversió i l’expansió geogràfica són fases posteriors. Els contactes universitaris poden ajudar a reclutar participants, sense condicionar el producte a una venda institucional.
 
 S’ha començat un prototip Next.js a `apps/web`, amb dades de mostra i persistència local. No es publica encara a Azure ni es connecta IA. L’allotjament Container Apps/ACR continua pendent de desplegament. Consulta `docs/product/campus-mvp.md` i `docs/product/data-model.md` per a l’abast i el model compartit.
+
+## Campus i BeFirst en paral·lel
+
+L’usuari ha creat `hello@incforstartup.es` i ha demanat aparcar el correu per centrar-se en codi i GitHub. També ha confirmat incorporar BeFirst (`befirst90.com`) mitjançant una fitxa i mantenir-ne el codi privat. La fitxa va a Projectes incubats i no comparteix dades amb l’espai docent.
+
+La primera API Campus és a `apps/api`; el frontend encara és una demostració local. No es creen recursos Azure ni es desplega BeFirst amb aquests canvis.
