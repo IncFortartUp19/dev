@@ -23,11 +23,13 @@ from campus_api.models import (
     Submission,
     Team,
     TeamMembership,
+    User,
     now,
 )
 from campus_api.schemas import (
     RUBRIC,
     InvitationIn,
+    MemberOut,
     ProjectIn,
     ProjectOut,
     ReviewIn,
@@ -291,3 +293,35 @@ def publish_review(submission_id: str, payload: ReviewIn, db: DB, actor: Actor):
     audit(db, actor, team.space_id, "review.published", review.id)
     db.commit()
     return review_out(review)
+
+
+@router.get("/spaces/{space_id}/members", response_model=list[MemberOut])
+def list_space_members(space_id: str, db: DB, actor: Actor, limit: Limit = 50, offset: Offset = 0):
+    require_teacher(db, space_id, actor)
+    rows = db.execute(
+        select(User, SpaceMembership.role)
+        .join(SpaceMembership)
+        .where(SpaceMembership.space_id == space_id)
+        .order_by(User.display_name, User.id)
+        .limit(limit)
+        .offset(offset)
+    ).all()
+    return [MemberOut(id=user.id, display_name=user.display_name, role=role) for user, role in rows]
+
+
+@router.get("/teams/{team_id}/members", response_model=list[UserOut])
+def list_team_members(team_id: str, db: DB, actor: Actor, limit: Limit = 50, offset: Offset = 0):
+    team = db.get(Team, team_id)
+    if team is None:
+        raise HTTPException(404, "Team not found")
+    member = membership(db, team.space_id, actor)
+    if member.role != "teacher":
+        require_team_member(db, team_id, actor)
+    return db.scalars(
+        select(User)
+        .join(TeamMembership)
+        .where(TeamMembership.team_id == team_id)
+        .order_by(User.display_name, User.id)
+        .limit(limit)
+        .offset(offset)
+    ).all()

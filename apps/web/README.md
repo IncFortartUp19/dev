@@ -1,6 +1,9 @@
-# IncForStartUp Campus — prototip
+# IncForStartUp Campus — web
 
-Frontend Next.js amb dades fictícies i emmagatzematge al navegador. No té autenticació real, API compartida ni IA connectada; no és un pilot amb alumnes reals.
+Next.js, React i TypeScript, amb dos modes separats:
+
+- **Demostració local** a `/demo`: dades fictícies, projectes a localStorage i fitxers a IndexedDB. El selector permet provar professor i alumne, sense autenticació real.
+- **Campus connectat** a `/campus`: login OIDC, sessió HttpOnly i dades de l’API FastAPI. Cada participant utilitza el seu compte; el rol depèn de la membresia de l’espai.
 
 ## Executar
 
@@ -9,10 +12,13 @@ Node.js 24 i npm:
 ```bash
 cd apps/web
 npm ci
+cp .env.example .env.local
 npm run dev
 ```
 
-Obre http://localhost:3000. El selector de la capçalera permet provar professor i alumne. L’ajuda permet exportar o restablir les fitxes locals. Els fitxers adjunts es conserven a IndexedDB i no s’inclouen en l’exportació JSON.
+Obre http://localhost:3000. Per defecte mostra la demostració. Amb `CAMPUS_MODE=connected`, la portada obre el portal autenticat; cal configurar les variables d’identitat i l’API descrites a [Campus connectat](../../docs/product/connected-campus.md). Sense configuració, el login informa que el pilot està en preparació i no dona accés a dades.
+
+Per provar professor i alumne reals, utilitza dos perfils de navegador o una finestra normal i una de privada. Dues pestanyes del mateix perfil comparteixen sessió.
 
 ## Validar
 
@@ -24,15 +30,23 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Les proves E2E arrenquen la compilació de producció al port 3100. En un entorn amb Chromium ja instal·lat, pots indicar `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium`. Per provar un servidor ja engegat, configura `QA_BASE_URL` amb la seva URL.
+Les proves E2E de demostració arrenquen el servidor de producció al port 3100. En un entorn amb Chromium instal·lat, pots indicar `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium`. `QA_BASE_URL` permet provar un servidor de demostració ja engegat.
 
-## Provar el recorregut
+## Prova connectada sense credencials reals
 
-1. Professor: crea un espai docent.
-2. Alumne: crea un projecte dins d’aquest espai i presenta una entrega amb fitxers.
-3. Professor: obre el projecte, puntua els quatre criteris i publica feedback.
-4. Alumne: presenta una nova versió i consulta el feedback de la versió anterior.
+Requereix Python 3.12, uv, OpenSSL i les dependències d’`apps/api` instal·lades:
 
-Els canvis persisteixen en el mateix navegador, però no es comparteixen entre dispositius ni pestanyes en temps real. No introdueixis treballs confidencials ni dades personals reals. El límit del prototip és de cinc fitxers de 10 MB per entrega, subjecte a la quota del navegador.
+```bash
+npm run build
+npm run test:connected
+```
 
-[Abast del MVP](../../docs/product/campus-mvp.md) · [Model del backend](../../docs/product/data-model.md).
+Arrenca serveis efímers a loopback: proveïdor OIDC HTTPS (9443), API (8100) i web (3400). Utilitza dos comptes i claus generades només per a les proves. No afegeix cap bypass d’autenticació al codi de l’aplicació ni necessita credencials de Microsoft/Azure. Vegeu el document del mode connectat per als límits i el funcionament.
+
+## Estat funcional
+
+El mode connectat permet crear espais, generar invitacions d’un sol ús, acceptar-les, crear equips i projectes, presentar versions de text i publicar feedback amb rúbrica. La nota es calcula també al servidor. Les revisions publicades són immutables en aquesta fase.
+
+La càrrega de documents al servidor queda pendent: els fitxers del prototip només existeixen en la demostració local. No hi ha IA connectada, enviament de correus ni aparador automàtic. La fitxa curada de BeFirst és a Projectes incubats de la demostració i no consulta el seu repositori privat.
+
+[Abast del MVP](../../docs/product/campus-mvp.md) · [Model de dades](../../docs/product/data-model.md) · [Login i mode connectat](../../docs/product/connected-campus.md).

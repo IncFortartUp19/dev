@@ -281,3 +281,22 @@ def test_simultaneous_invitation_acceptance_enrolls_only_one_user(api):
     assert sorted(r.status_code for r in responses) == [200, 404]
     memberships = [api.request("GET", "/spaces", name).json() for name in ("alice", "bob")]
     assert sorted(len(rows) for rows in memberships) == [0, 1]
+
+
+def test_membership_lists_require_the_right_account_and_scope(api):
+    space, team, _project = api.project()
+    api.enroll(space["id"], "bob")
+    api.space("outsider")
+    roster = api.request("GET", f"/spaces/{space['id']}/members")
+    assert roster.status_code == 200
+    assert sorted(item["display_name"] for item in roster.json()) == ["alice", "bob", "teacher"]
+    assert set(roster.json()[0]) == {"id", "display_name", "role"}
+    assert api.request("GET", f"/spaces/{space['id']}/members", "alice").status_code == 403
+    assert api.request("GET", f"/spaces/{space['id']}/members", "outsider").status_code == 404
+    for actor in ("teacher", "alice"):
+        response = api.request("GET", f"/teams/{team['id']}/members", actor)
+        assert response.status_code == 200
+        assert [row["display_name"] for row in response.json()] == ["alice"]
+        assert set(response.json()[0]) == {"id", "display_name"}
+    assert api.request("GET", f"/teams/{team['id']}/members", "bob").status_code == 404
+    assert api.request("GET", f"/teams/{team['id']}/members", "outsider").status_code == 404

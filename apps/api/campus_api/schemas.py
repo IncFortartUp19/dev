@@ -102,3 +102,7 @@ class SubmissionOut(Output):
     note: str
     submitted_by: str
     review: ReviewOut | None = None
+
+
+class MemberOut(UserOut):
+    role: str

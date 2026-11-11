@@ -22,7 +22,7 @@ Amb els camps OIDC buits, pots obrir la documentació però no operar amb dades 
 
 Configura conjuntament `OIDC_ISSUER`, `OIDC_AUDIENCE` i `OIDC_JWKS_URL` del proveïdor d’identitat d’usuaris de Campus. La URL de JWKS ha de ser HTTPS. L’API accepta access tokens RS256 i verifica signatura, emissor, audiència, expiració, data d’emissió i subjecte. El primer accés vàlid crea el perfil identificat per emissor i subjecte. No emmagatzema contrasenyes.
 
-Els rols del token no concedeixen permisos docents: les autoritzacions es consulten a la base de dades per espai i equip. Un professor en un espai no rep accés a un altre espai. El token de GitHub OIDC utilitzat per desplegar infraestructura no és un token d’usuari per a aquesta API. El login real del frontend i l’elecció/configuració del proveïdor d’usuaris encara estan pendents.
+Els rols del token no concedeixen permisos docents: les autoritzacions es consulten a la base de dades per espai i equip. Un professor en un espai no rep accés a un altre espai. El token de GitHub OIDC utilitzat per desplegar infraestructura no és un token d’usuari per a aquesta API. El codi del login i el mode connectat són a `apps/web`; l’elecció/configuració del proveïdor real d’usuaris resta pendent.
 
 Les proves simulen la identitat dins del procés de pytest; aquest mecanisme no està habilitat al servidor. Les proves específiques d’autenticació utilitzen tokens RSA signats i comproven el rebuig de signatures alterades, tokens caducats i emissor/audiència incorrectes.
 
@@ -56,10 +56,12 @@ Les migracions versionades no s’executen automàticament en arrencar el servid
 
 ## Límits d’aquest increment
 
-- El frontend `apps/web` continua sent el prototip local; encara no consumeix aquesta API.
+- El frontend `apps/web` disposa de mode connectat a `/campus`, amb proxy de servidor i OIDC. Cal configurar el proveïdor real del pilot; `/demo` continua separat amb dades locals.
 - Les entregues de l’API són textuals. La càrrega privada de fitxers a Azure Blob i el seu control d’accés són el següent increment; els fitxers del prototip encara són locals.
 - No s’envien correus: els tokens d’invitació es distribueixen manualment. `hello@incforstartup.es` no s’utilitza com a remitent ni requereix credencials aquí.
 - No hi ha verificació institucional de professors, recuperació de comptes ni IA connectada.
 - La publicació d’aparadors i les dades de BeFirst no s’importen a les taules acadèmiques.
 
 `APP_ENV=production` exigeix PostgreSQL, OIDC i orígens CORS HTTPS explícits. Abans d’un pilot amb persones reals cal completar login, protecció davant abús/rate limiting, càrrega de documents, gestió de comptes i desplegament HTTPS. Aquest canvi no desplega Azure ni modifica DNS.
+
+Els professors poden consultar `/v1/spaces/{id}/members`. `/v1/teams/{id}/members` està limitat al professor de l’espai i als membres del mateix equip; les respostes no exposen emails ni subjectes OIDC.

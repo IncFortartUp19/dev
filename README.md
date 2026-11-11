@@ -49,6 +49,8 @@ El [prototip universitari](apps/web/README.md) permet provar espais docents, pro
 
 ## API i projectes vinculats
 
-La [Campus API](apps/api/README.md) afegeix persistència, identitat OIDC i permisos d’espai/equip, amb migracions i proves SQLite/PostgreSQL. Encara no està connectada al prototip web ni desplegada a Azure.
+La [Campus API](apps/api/README.md) afegeix persistència, identitat OIDC i permisos d’espai/equip, amb migracions i proves SQLite/PostgreSQL. El mode `/campus` de la web ja consumeix l’API amb sessió OIDC; cal configurar el proveïdor real. Encara no està desplegada a Azure.
 
 [BeFirst](docs/projects/be-first.md) és el primer projecte vinculat a la secció Projectes incubats. La fitxa no inclou el seu codi privat ni dades internes.
+
+El [Campus connectat](docs/product/connected-campus.md) cobreix el recorregut entre dos comptes independents: professor convida, alumne presenta i professor avalua. Les proves de GitHub arrenquen un proveïdor OIDC local aïllat per validar-lo sense credencials reals.

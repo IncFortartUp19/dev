@@ -58,3 +58,7 @@ Es conserva Azure/Terraform i France Central. Aquesta fase no aplica la base Con
 S’ha afegit una API FastAPI amb migracions i permisos per espai/equip a `apps/api`. La interfície continua utilitzant dades locals fins que connectem el login i l’API. Les invitacions reals existeixen a l’API, però els codis del prototip continuen sent demostratius. Les entregues de l’API són textuals; la càrrega de fitxers al servidor resta pendent.
 
 La secció Projectes incubats presenta BeFirst amb nom i domini facilitats pel promotor. És una fitxa curada, no una entrega acadèmica ni una importació del seu codi privat.
+
+## Increment connectat
+
+El mode `/campus` consumeix l’API a través d’un proxy de servidor amb sessió OIDC. La prova de navegador utilitza comptes independents de professor i alumne i una base compartida efímera. El rol és per espai i es valida al backend. El professor convida i avalua amb el seu compte; l’alumne utilitza el seu per presentar entregues. El proveïdor real, el desplegament HTTPS i la càrrega privada de documents continuen pendents. El selector de rols i les dades locals es mantenen només a `/demo`.

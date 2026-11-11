@@ -34,3 +34,7 @@ S’ha començat un prototip Next.js a `apps/web`, amb dades de mostra i persist
 L’usuari ha creat `hello@incforstartup.es` i ha demanat aparcar el correu per centrar-se en codi i GitHub. També ha confirmat incorporar BeFirst (`befirst90.com`) mitjançant una fitxa i mantenir-ne el codi privat. La fitxa va a Projectes incubats i no comparteix dades amb l’espai docent.
 
 La primera API Campus és a `apps/api`; el frontend encara és una demostració local. No es creen recursos Azure ni es desplega BeFirst amb aquests canvis.
+
+## Connexió entre frontend i API
+
+S’ha afegit login OIDC configurable, proxy BFF amb cookies HttpOnly i el mode Campus connectat. Es manté `/demo` separat. El recorregut entre professor i alumne s’ha preparat per provar amb dues sessions independents: el professor convida i avalua amb el seu compte, i l’alumne presenta amb el seu; els permisos depenen de cada espai. Encara cal configurar el proveïdor real abans del pilot. No es modifiquen Azure, els dominis, el correu ni les dades de BeFirst.
