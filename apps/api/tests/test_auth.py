@@ -1,4 +1,5 @@
 import time
+from dataclasses import replace
 from types import SimpleNamespace
 
 import jwt
@@ -95,6 +96,10 @@ def test_unsigned_and_tampered_tokens_are_rejected(signed_api):
     assert (
         api.client.get("/v1/me", headers={"Authorization": f"Bearer {unsigned}"}).status_code == 401
     )
+    assert (
+        api.client.get("/v1/me", headers={"Authorization": "Bearer " + "x" * 16385}).status_code
+        == 401
+    )
 
 
 def test_readiness_requires_migrations_and_production_requires_identity(tmp_path):
@@ -108,3 +113,93 @@ def test_readiness_requires_migrations_and_production_requires_identity(tmp_path
         Settings(oidc_issuer="https://identity.example")
     with pytest.raises(ValueError):
         Settings(cors_origins=("*",))
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"scope": "other.read"},
+        {"scope": "vault.access.extra"},
+        {"scope": ["vault.access"]},
+        {"azp": "untrusted-client"},
+        {"azp": None},
+        {"azp": "web-client", "appid": "untrusted-client"},
+        {"aud": ["campus-api", "other-api"]},
+    ],
+)
+def test_federation_policy_rejects_wrong_scopes_clients_and_multiple_audiences(signed_api, changes):
+    api, mint = signed_api
+    api.app.state.settings = replace(
+        api.app.state.settings,
+        oidc_required_scope="vault.access",
+        oidc_allowed_clients=("web-client",),
+    )
+    claims = {"scope": "openid vault.access", "azp": "web-client", **changes}
+    assert (
+        api.client.get("/v1/me", headers={"Authorization": f"Bearer {mint(**claims)}"}).status_code
+        == 401
+    )
+
+
+def test_federation_scope_and_client_policy_accepts_provider_claims(signed_api):
+    api, mint = signed_api
+    api.app.state.settings = replace(
+        api.app.state.settings,
+        oidc_required_scope="vault.access",
+        oidc_allowed_clients=("web-client",),
+    )
+    for claims in (
+        {"scp": "vault.access", "azp": "web-client"},
+        {"scope": "openid vault.access", "appid": "web-client"},
+    ):
+        assert (
+            api.client.get(
+                "/v1/me", headers={"Authorization": f"Bearer {mint(**claims)}"}
+            ).status_code
+            == 200
+        )
+    # An ID token or app-only token without delegated API scope is not sufficient.
+    assert (
+        api.client.get(
+            "/v1/me", headers={"Authorization": f"Bearer {mint(azp='web-client')}"}
+        ).status_code
+        == 401
+    )
+
+
+def test_matching_email_does_not_link_federated_accounts(signed_api):
+    api, mint = signed_api
+    ids = [
+        api.client.get(
+            "/v1/me", headers={"Authorization": f"Bearer {mint(sub=sub, email='same@example.org')}"}
+        ).json()["id"]
+        for sub in ("first", "second")
+    ]
+    assert ids[0] != ids[1]
+
+
+def test_production_requires_explicit_delegated_token_policy():
+    base = dict(
+        environment="production",
+        database_url="postgresql://localhost/campus",
+        oidc_issuer="https://identity.example/tenant",
+        oidc_audience="campus-api",
+        oidc_jwks_url="https://identity.example/jwks",
+        cors_origins=("https://campus.example",),
+    )
+    with pytest.raises(ValueError):
+        Settings(**base)
+    assert Settings(
+        **base, oidc_required_scope="vault.access", oidc_allowed_clients=("web-client",)
+    )
+    for url in (
+        "http://identity.example",
+        "https://user:pass@identity.example",
+        "https://identity.example/#fragment",
+    ):
+        with pytest.raises(ValueError):
+            Settings(
+                oidc_issuer=url,
+                oidc_audience="campus-api",
+                oidc_jwks_url="https://identity.example/jwks",
+            )

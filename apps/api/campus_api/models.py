@@ -124,3 +124,34 @@ class AuditEvent(Base):
     action: Mapped[str] = mapped_column(String(80))
     entity_id: Mapped[str] = mapped_column(String(36))
     occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class ProjectVault(Base):
+    """One private project boundary; unrelated to Campus teacher/team permissions."""
+
+    __tablename__ = "project_vaults"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=identifier)
+    name: Mapped[str] = mapped_column(String(100))
+    created_by: Mapped[str] = mapped_column(ForeignKey("users.id"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class VaultMembership(Base):
+    __tablename__ = "vault_memberships"
+    vault_id: Mapped[str] = mapped_column(ForeignKey("project_vaults.id"), primary_key=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    role: Mapped[str] = mapped_column(String(12))
+    __table_args__ = (
+        CheckConstraint("role IN ('owner', 'contributor', 'reader')", name="ck_vault_role"),
+        Index("ix_vault_membership_user", "user_id", "vault_id"),
+    )
+
+
+class VaultEvent(Base):
+    __tablename__ = "vault_events"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=identifier)
+    vault_id: Mapped[str] = mapped_column(ForeignKey("project_vaults.id"), index=True)
+    actor_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
+    action: Mapped[str] = mapped_column(String(40))
+    target_id: Mapped[str] = mapped_column(String(36))
+    occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)

@@ -33,6 +33,8 @@ def get_principal(
 ) -> Principal:
     if credentials is None:
         raise unauthorized()
+    if len(credentials.credentials) > 16384:
+        raise unauthorized()
     settings = request.app.state.settings
     if request.app.state.jwks is None:
         raise HTTPException(503, "OIDC identity provider is not configured")
@@ -44,11 +46,26 @@ def get_principal(
             algorithms=["RS256"],
             issuer=settings.oidc_issuer,
             audience=settings.oidc_audience,
-            options={"require": ["exp", "iat", "iss", "aud", "sub"]},
+            options={"require": ["exp", "iat", "iss", "aud", "sub"], "strict_aud": True},
             leeway=30,
         )
         if not isinstance(claims["sub"], str) or not 1 <= len(claims["sub"]) <= 512:
             raise unauthorized()
+        if settings.oidc_required_scope:
+            scope = claims.get("scp", claims.get("scope"))
+            if not isinstance(scope, str) or settings.oidc_required_scope not in scope.split():
+                raise unauthorized()
+        if settings.oidc_allowed_clients:
+            clients = [claims[key] for key in ("azp", "appid") if key in claims]
+            if (
+                not clients
+                or any(
+                    not isinstance(client, str) or client not in settings.oidc_allowed_clients
+                    for client in clients
+                )
+                or len(set(clients)) != 1
+            ):
+                raise unauthorized()
         name = claims.get("name")
         return Principal(
             subject=f"{settings.oidc_issuer}|{claims['sub']}",

@@ -10,6 +10,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from campus_api.config import Settings
 from campus_api.db import make_engine
 from campus_api.routes import router
+from campus_api.vaults import router as vault_router
 
 
 def create_app(settings: Settings | None = None):
@@ -29,6 +30,16 @@ def create_app(settings: Settings | None = None):
         if settings.oidc_jwks_url
         else None
     )
+
+    @app.middleware("http")
+    async def private_responses(request: Request, call_next):
+        response = await call_next(request)
+        if request.url.path.startswith("/v1/"):
+            response.headers["Cache-Control"] = "no-store"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["X-Content-Type-Options"] = "nosniff"
+        return response
+
     app.add_middleware(
         CORSMiddleware,
         allow_origins=list(settings.cors_origins),
@@ -60,4 +71,5 @@ def create_app(settings: Settings | None = None):
             return JSONResponse(status_code=503, content={"status": "not_ready"})
 
     app.include_router(router)
+    app.include_router(vault_router)
     return app

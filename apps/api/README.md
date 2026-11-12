@@ -62,6 +62,14 @@ Les migracions versionades no s’executen automàticament en arrencar el servid
 - No hi ha verificació institucional de professors, recuperació de comptes ni IA connectada.
 - La publicació d’aparadors i les dades de BeFirst no s’importen a les taules acadèmiques.
 
-`APP_ENV=production` exigeix PostgreSQL, OIDC i orígens CORS HTTPS explícits. Abans d’un pilot amb persones reals cal completar login, protecció davant abús/rate limiting, càrrega de documents, gestió de comptes i desplegament HTTPS. Aquest canvi no desplega Azure ni modifica DNS.
+`APP_ENV=production` exigeix PostgreSQL, OIDC, `OIDC_REQUIRED_SCOPE`, `OIDC_ALLOWED_CLIENTS` i orígens CORS HTTPS explícits. El proveïdor ha d’emetre l’scope delegat i azp/appid en els access tokens. Abans d’un pilot amb persones reals cal completar login, protecció davant abús/rate limiting, càrrega de documents, gestió de comptes i desplegament HTTPS. Aquest canvi no desplega Azure ni modifica DNS.
 
 Els professors poden consultar `/v1/spaces/{id}/members`. `/v1/teams/{id}/members` està limitat al professor de l’espai i als membres del mateix equip; les respostes no exposen emails ni subjectes OIDC.
+
+## Projectes privats independents de Campus
+
+La migració `0002` afegeix vaults amb membresies pròpies. `POST /v1/vaults` rep `{"name":"Projecte"}`; `GET /v1/vaults` només retorna els espais del compte i el seu rol. `GET /v1/vaults/{id}` comprova membresia. El propietari pot consultar `/members` i `/events`, concedir una membresia amb `POST /members` i `{"user_id":"UUID intern del destinatari","role":"reader"}` (o contributor), i revocar-la amb `DELETE /members/{user_id}`. Els llistats accepten limit 1–100 i offset 0–100000. No es concedeix owner ni es pot eliminar el propietari.
+
+No s’hereten permisos docents ni d’altres projectes. No es vinculen comptes per email. El destinatari ja ha d’haver iniciat sessió a l’API; el propietari ha de verificar el seu ID per un canal conegut. La interfície d’incorporació i el flux de sol·licitud/acceptació resten pendents. Els registres d’auditoria d’aquesta fase no són immutables contra administradors.
+
+No hi ha encara càrrega sensible, Azure Blob ni RLS. Consulta [l’arquitectura i criteris d’activació](../../docs/product/private-startup-security.md). Les respostes `/v1/` són no-store; els access tokens admeten una audiència única. En desenvolupament, scope/client són opcionals per compatibilitat amb proves; en producció són obligatoris.

@@ -185,7 +185,12 @@ server = createServer(
         iat: stamp,
         exp: stamp + 600,
       };
-      const accessToken = token({ ...shared, aud: "campus-api-e2e" });
+      const accessToken = token({
+        ...shared,
+        aud: "campus-api-e2e",
+        scope: saved.scope,
+        azp: clientId,
+      });
       accessTokens.set(accessToken, shared);
       return json(response, {
         token_type: "Bearer",
@@ -206,6 +211,8 @@ const common = {
   OIDC_ISSUER: issuer,
   OIDC_AUDIENCE: "campus-api-e2e",
   OIDC_JWKS_URL: `${issuer}/jwks`,
+  OIDC_REQUIRED_SCOPE: "campus.read",
+  OIDC_ALLOWED_CLIENTS: clientId,
   CORS_ORIGINS: origin,
   SSL_CERT_FILE: cert,
 };

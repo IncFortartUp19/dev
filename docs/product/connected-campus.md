@@ -80,3 +80,5 @@ Els fitxers `tests/support` no formen part de l’autenticació de producció i 
 ## Encara pendent
 
 Càrrega de documents a Azure Blob, configuració del proveïdor real, desplegament HTTPS i validació del pilot amb usuaris reals. Les entregues connectades d’aquesta fase són de text. L’avaluació publicada és immutable i la rúbrica és la mateixa de quatre criteris de l’API; la configuració i les correccions auditables es desenvoluparan després.
+
+En producció, l’API exigeix també `OIDC_REQUIRED_SCOPE` i `OIDC_ALLOWED_CLIENTS`: l’access token ha d’incloure l’scope delegat exacte i el client autoritzat a azp/appid. Vegeu [federació i espais privats](private-startup-security.md).
