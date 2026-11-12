@@ -380,6 +380,7 @@ export function ConnectedCampus() {
             {space?.title ?? "Els teus espais"}
           </span>
           <div className="topbar-actions">
+            <Link className="text-button" href="/lab">Laboratori</Link>
             <span className="demo-pill">
               <span />
               Compte connectat

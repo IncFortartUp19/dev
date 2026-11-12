@@ -521,6 +521,7 @@ export default function Campus() {
             Campus <span>/</span> {project ? "Projecte" : view}
           </div>
           <div className="topbar-actions">
+            <a className="text-button" href="/lab">Laboratori</a>
             <a href="/campus" className="text-button connected-link">
               Campus compartit <ArrowUpRight size={14} />
             </a>

@@ -54,3 +54,5 @@ La [Campus API](apps/api/README.md) afegeix persistència, identitat OIDC i perm
 [BeFirst](docs/projects/be-first.md) és el primer projecte vinculat a la secció Projectes incubats. La fitxa no inclou el seu codi privat ni dades internes.
 
 El [Campus connectat](docs/product/connected-campus.md) cobreix el recorregut entre dos comptes independents: professor convida, alumne presenta i professor avalua. Les proves de GitHub arrenquen un proveïdor OIDC local aïllat per validar-lo sense credencials reals.
+
+La proposta de continuïtat de Campus cap a validació i acompanyament és a [la ruta de producte](docs/product/incforstartup-roadmap.md). El laboratori `/lab` permet preparar experiments i exportar/recuperar esborranys locals.

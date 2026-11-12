@@ -2209,3 +2209,13 @@ textarea {
     display: none;
   }
 }
+
+.validation-lab { max-width: 1140px; margin: 0 auto; padding: 32px 24px 64px; }
+.validation-lab nav, .validation-toolbar { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.validation-lab .page-heading { margin: 32px 0; }
+.validation-lab .panel { padding: 24px; margin-bottom: 24px; min-width: 0; }
+.validation-lab .panel p { color: var(--muted); line-height: 1.7; }
+.validation-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; }
+.validation-lab textarea { display: block; width: 100%; resize: vertical; margin-top: 16px; }
+.validation-guidance { border-left: 4px solid var(--green); }
+@media (max-width: 680px) { .validation-grid { grid-template-columns: 1fr; } .validation-lab { padding: 20px 16px; } .validation-lab .page-heading { align-items: flex-start; } }

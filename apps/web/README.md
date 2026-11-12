@@ -50,3 +50,5 @@ El mode connectat permet crear espais, generar invitacions d’un sol ús, accep
 La càrrega de documents al servidor queda pendent: els fitxers del prototip només existeixen en la demostració local. No hi ha IA connectada, enviament de correus ni aparador automàtic. La fitxa curada de BeFirst és a Projectes incubats de la demostració i no consulta el seu repositori privat.
 
 [Abast del MVP](../../docs/product/campus-mvp.md) · [Model de dades](../../docs/product/data-model.md) · [Login i mode connectat](../../docs/product/connected-campus.md).
+
+`/lab`: laboratori independent de validació (problema, públic, hipòtesi, experiment i aprenentatge). Esborrany en memòria amb exportació/importació JSON; no es desa al compte ni s’envia a una IA.
