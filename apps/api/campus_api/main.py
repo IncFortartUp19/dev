@@ -8,6 +8,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from campus_api.config import Settings
+from campus_api.database_security import verify_runtime_database
 from campus_api.db import make_engine
 from campus_api.routes import router
 from campus_api.vaults import router as vault_router
@@ -19,8 +20,12 @@ def create_app(settings: Settings | None = None):
 
     @asynccontextmanager
     async def lifespan(_app):
-        yield
-        engine.dispose()
+        try:
+            if settings.environment == "production":
+                verify_runtime_database(engine)
+            yield
+        finally:
+            engine.dispose()
 
     app = FastAPI(title="IncForStartUp Campus API", version="0.1.0", lifespan=lifespan)
     app.state.settings = settings

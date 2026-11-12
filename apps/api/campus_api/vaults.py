@@ -55,7 +55,13 @@ def member(db, vault_id, actor, owner=False):
 
 def event(db, vault_id, actor, action, target_id):
     db.add(
-        VaultEvent(vault_id=str(vault_id), actor_id=actor.id, action=action, target_id=target_id)
+        VaultEvent(
+            vault_id=str(vault_id),
+            actor_id=actor.id,
+            owner_id=actor.id,
+            action=action,
+            target_id=target_id,
+        )
     )
 
 
@@ -64,7 +70,7 @@ def create_vault(payload: VaultIn, db: DB, actor: Actor):
     vault = ProjectVault(name=payload.name, created_by=actor.id)
     db.add(vault)
     db.flush()
-    db.add(VaultMembership(vault_id=vault.id, user_id=actor.id, role="owner"))
+    db.add(VaultMembership(vault_id=vault.id, user_id=actor.id, owner_id=actor.id, role="owner"))
     event(db, vault.id, actor, "project.created", vault.id)
     db.commit()
     return VaultOut(id=vault.id, name=vault.name, role="owner")
@@ -74,7 +80,7 @@ def create_vault(payload: VaultIn, db: DB, actor: Actor):
 def list_vaults(db: DB, actor: Actor, limit: Limit = 50, offset: Offset = 0):
     rows = db.execute(
         select(ProjectVault, VaultMembership.role)
-        .join(VaultMembership)
+        .join(VaultMembership, VaultMembership.vault_id == ProjectVault.id)
         .where(VaultMembership.user_id == actor.id)
         .order_by(ProjectVault.id)
         .limit(limit)
@@ -111,7 +117,9 @@ def grant_member(vault_id: UUID, payload: GrantIn, db: DB, actor: Actor):
     # No email/domain matching and no implicit access inherited from another project.
     if db.get(VaultMembership, (str(vault_id), user_id)):
         raise HTTPException(409, "Membership already exists")
-    row = VaultMembership(vault_id=str(vault_id), user_id=user_id, role=payload.role)
+    row = VaultMembership(
+        vault_id=str(vault_id), user_id=user_id, owner_id=actor.id, role=payload.role
+    )
     db.add(row)
     event(db, vault_id, actor, f"member.granted.{payload.role}", user_id)
     db.commit()

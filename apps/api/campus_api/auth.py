@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from campus_api.db import get_db
+from campus_api.db import bind_actor, get_db
 from campus_api.models import User
 
 bearer = HTTPBearer(auto_error=False)
@@ -88,6 +88,7 @@ def get_actor(db: DB, principal: Annotated[Principal, Depends(get_principal)]) -
             user = db.scalar(select(User).where(User.auth_subject == principal.subject))
             if user is None:
                 raise
+    bind_actor(db, user.id)
     return user
 
 

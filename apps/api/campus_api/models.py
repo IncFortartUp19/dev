@@ -7,6 +7,7 @@ from sqlalchemy import (
     Date,
     DateTime,
     ForeignKey,
+    ForeignKeyConstraint,
     Index,
     String,
     UniqueConstraint,
@@ -134,6 +135,7 @@ class ProjectVault(Base):
     name: Mapped[str] = mapped_column(String(100))
     created_by: Mapped[str] = mapped_column(ForeignKey("users.id"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    __table_args__ = (Index("uq_vault_owner", "id", "created_by", unique=True),)
 
 
 class VaultMembership(Base):
@@ -141,9 +143,18 @@ class VaultMembership(Base):
     vault_id: Mapped[str] = mapped_column(ForeignKey("project_vaults.id"), primary_key=True)
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), primary_key=True)
     role: Mapped[str] = mapped_column(String(12))
+    owner_id: Mapped[str] = mapped_column(String(36))
     __table_args__ = (
         CheckConstraint("role IN ('owner', 'contributor', 'reader')", name="ck_vault_role"),
         Index("ix_vault_membership_user", "user_id", "vault_id"),
+        ForeignKeyConstraint(
+            ["vault_id", "owner_id"],
+            ["project_vaults.id", "project_vaults.created_by"],
+            name="fk_membership_vault_owner",
+        ),
+        CheckConstraint(
+            "role <> 'owner' OR user_id = owner_id", name="ck_membership_owner_identity"
+        ),
     )
 
 
@@ -155,3 +166,11 @@ class VaultEvent(Base):
     action: Mapped[str] = mapped_column(String(40))
     target_id: Mapped[str] = mapped_column(String(36))
     occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    owner_id: Mapped[str] = mapped_column(String(36))
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["vault_id", "owner_id"],
+            ["project_vaults.id", "project_vaults.created_by"],
+            name="fk_event_vault_owner",
+        ),
+    )

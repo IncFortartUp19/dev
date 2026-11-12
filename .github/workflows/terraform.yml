@@ -16,7 +16,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        directory: [infra/terraform/bootstrap, infra/terraform/environments/dev, infra/terraform/github-identity]
+        directory: [infra/terraform/bootstrap, infra/terraform/environments/dev, infra/terraform/github-identity, infra/terraform/modules/private-documents]
     defaults:
       run:
         working-directory: ${{ matrix.directory }}

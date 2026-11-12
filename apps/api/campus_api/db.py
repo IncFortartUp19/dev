@@ -1,5 +1,5 @@
 from fastapi import Request
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, text
 from sqlalchemy.orm import DeclarativeBase, Session
 
 from campus_api.config import Settings
@@ -7,6 +7,22 @@ from campus_api.config import Settings
 
 class Base(DeclarativeBase):
     pass
+
+
+@event.listens_for(Session, "after_begin")
+def transaction_actor(session, _transaction, connection):
+    if connection.dialect.name == "postgresql":
+        connection.execute(
+            text("SELECT set_config('app.actor_id', :actor, true)"),
+            {"actor": session.info.get("actor_id", "")},
+        )
+
+
+def bind_actor(db: Session, actor_id: str):
+    # Only called after OIDC validation and resolution to an internal user.
+    db.info["actor_id"] = actor_id
+    if db.bind.dialect.name == "postgresql":
+        db.execute(text("SELECT set_config('app.actor_id', :actor, true)"), {"actor": actor_id})
 
 
 def make_engine(settings: Settings):

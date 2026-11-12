@@ -61,7 +61,7 @@ flowchart LR
 
 ## Segona barrera i Azure
 
-Abans d’admetre documents sensibles: PostgreSQL RLS obligatòria per vault amb rol d’aplicació sense BYPASSRLS ni privilegis de propietari/superusuari. Context d’usuari per transacció des de la identitat autenticada, mai des d’un header d’usuari. Provar context absent, consultes sense filtre, reutilització de connexions i treballs asíncrons. **Aquest increment encara no implementa RLS**; l’aïllament actual és a l’API i les seves proves.
+Abans d’admetre documents sensibles: PostgreSQL RLS obligatòria per vault amb rol d’aplicació sense BYPASSRLS ni privilegis de propietari/superusuari. Context d’usuari per transacció des de la identitat autenticada, mai des d’un header d’usuari. Provar context absent, consultes sense filtre, reutilització de connexions i treballs asíncrons. **Actualització:** la migració `0003` ja implementa RLS forçada als vaults. Vegeu [implementació, permisos SQL i base Blob](rls-and-document-storage.md). Les taules de documents encara no existeixen.
 
 Blob/PostgreSQL sense accés públic, Private Endpoints/DNS i identitats gestionades de mínim privilegi. Desactivar accés anònim i Shared Key al storage. Separar identitats de càrrega, anàlisi i lectura quan el disseny ho permeti. La identitat de desplegament GitHub no ha de llegir habitualment documents.
 
@@ -82,4 +82,4 @@ Classificació, retenció, supressió, recuperació i resposta a incidents s’h
 
 Les proves actuals cobreixen dos propietaris, dos projectes del mateix propietari, consulta/gestió creuada, revocació, intents de canviar propietari, respostes sense cache i tokens RSA signats amb claims incorrectes.
 
-Per obrir la pujada sensible encara cal: RLS amb rol limitat, storage i escàner reals, casos nets/infectats/no analitzables, xarxa privada, MFA/step-up, auditoria de lectures, restauració i revisió de seguretat del conjunt. Cap prova unitària acredita per si sola una garantia de no filtració.
+La RLS dels vaults ja es prova amb un login limitat. Per obrir la pujada sensible encara cal: RLS dels documents, storage i escàner reals, casos nets/infectats/no analitzables, xarxa privada, MFA/step-up, auditoria de lectures, restauració i revisió de seguretat del conjunt. Cap prova unitària acredita per si sola una garantia de no filtració.

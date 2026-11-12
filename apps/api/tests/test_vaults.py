@@ -1,5 +1,10 @@
 from uuid import uuid4
 
+from alembic import command
+from sqlalchemy import text
+
+from tests.conftest import migration_config
+
 
 def vault(api, actor="founder", name="Projecte privat"):
     response = api.request("POST", "/vaults", actor, json={"name": name})
@@ -97,3 +102,28 @@ def test_vaults_reject_overposting_and_implicit_owner_roles(api):
         api.client.get("/v1/vaults"),
     ):
         assert response.headers["cache-control"] == "no-store"
+
+
+def test_rls_migration_backfills_existing_project_relations(api):
+    project = vault(api)
+    owner = api.request("GET", "/me", "founder").json()["id"]
+    guest = api.request("GET", "/me", "guest").json()["id"]
+    assert (
+        api.request(
+            "POST",
+            f"/vaults/{project}/members",
+            "founder",
+            json={"user_id": guest, "role": "reader"},
+        ).status_code
+        == 201
+    )
+    config = migration_config(api.settings)
+    command.downgrade(config, "0002")
+    command.upgrade(config, "head")
+    with api.app.state.engine.connect() as conn:
+        for table in ("vault_memberships", "vault_events"):
+            owners = conn.scalars(
+                text(f"SELECT owner_id FROM {table} WHERE vault_id=:id"), {"id": project}
+            ).all()
+            assert owners and set(owners) == {owner}
+    assert api.request("GET", f"/vaults/{project}", "guest").json()["role"] == "reader"

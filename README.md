@@ -57,4 +57,6 @@ El [Campus connectat](docs/product/connected-campus.md) cobreix el recorregut en
 
 La proposta de continuïtat de Campus cap a validació i acompanyament és a [la ruta de producte](docs/product/incforstartup-roadmap.md). El laboratori `/lab` permet preparar experiments i exportar/recuperar esborranys locals.
 
-[Espais privats de startups i federació](docs/product/private-startup-security.md): primera API de membresies independents per projecte i disseny de quarantena/descàrrega; la càrrega sensible i RLS encara estan pendents.
+[Espais privats de startups i federació](docs/product/private-startup-security.md): primera API de membresies independents per projecte i disseny de quarantena/descàrrega; la càrrega sensible continua pendent; la migració `0003` afegeix RLS als vaults.
+
+[RLS i base Blob privada](docs/product/rls-and-document-storage.md): polítiques forçades de PostgreSQL i mòdul Terraform independent de quarantena/Defender, encara sense desplegar ni habilitar càrrega de documents.
