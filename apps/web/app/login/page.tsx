@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Sprout, ArrowRight, LockKeyhole } from "lucide-react";
 import { loginConfig, loginDestination } from "../../lib/auth-config";
-import { loginAction } from "../actions";
+import { loginAction, privateLoginAction } from "../actions";
 export const dynamic = "force-dynamic";
 
 export default async function Login({
@@ -33,7 +33,13 @@ export default async function Login({
           </p>
         )}
         {configured ? (
-          <form action={loginAction}>
+          <form
+            action={
+              params.next === "/private" && loginConfig()?.privateContext
+                ? privateLoginAction
+                : loginAction
+            }
+          >
             <input
               type="hidden"
               name="next"

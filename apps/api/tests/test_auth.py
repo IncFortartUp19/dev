@@ -1,45 +1,12 @@
 import time
 from dataclasses import replace
-from types import SimpleNamespace
 
 import jwt
 import pytest
-from cryptography.hazmat.primitives.asymmetric import rsa
 from fastapi.testclient import TestClient
 
-from campus_api.auth import get_principal
 from campus_api.config import Settings
 from campus_api.main import create_app
-
-
-@pytest.fixture
-def signed_api(api):
-    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-    api.app.dependency_overrides.pop(get_principal)
-    api.app.state.settings = Settings(
-        database_url=api.settings.database_url,
-        oidc_issuer="https://identity.example/tenant",
-        oidc_audience="campus-api",
-        oidc_jwks_url="https://identity.example/tenant/jwks",
-    )
-    api.app.state.jwks = SimpleNamespace(
-        get_signing_key_from_jwt=lambda _token: SimpleNamespace(key=private_key.public_key())
-    )
-
-    def mint(**changes):
-        stamp = int(time.time())
-        payload = {
-            "iss": "https://identity.example/tenant",
-            "aud": "campus-api",
-            "sub": "user-123",
-            "iat": stamp,
-            "exp": stamp + 300,
-            "name": "Laia",
-        }
-        payload.update(changes)
-        return jwt.encode(payload, private_key, algorithm="RS256")
-
-    return api, mint
 
 
 def test_missing_and_unconfigured_identity_provider_fail_closed(api):

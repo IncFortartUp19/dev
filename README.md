@@ -62,3 +62,5 @@ La proposta de continuïtat de Campus cap a validació i acompanyament és a [la
 [RLS i base Blob privada](docs/product/rls-and-document-storage.md): polítiques forçades de PostgreSQL i mòdul Terraform independent de quarantena/Defender, encara sense desplegar ni habilitar càrrega de documents.
 
 [Circuit de documents privats](docs/product/private-document-pipeline.md): càrrega en quarantena, consumidor Service Bus separat i descàrrega autoritzada amb versió/checksum; deshabilitat per defecte fins a validar la integració Azure.
+
+[Portal privat, context MFA i validació del pilot](docs/product/private-pilot-validation.md): interfície `/private`, accés reforçat al servidor i resultat de la comprovació real de prerequisits Azure.

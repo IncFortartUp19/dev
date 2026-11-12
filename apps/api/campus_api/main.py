@@ -1,12 +1,13 @@
 from contextlib import asynccontextmanager
 
 import jwt
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
+from campus_api.auth import require_private_context
 from campus_api.blob_store import AzureDocumentStore
 from campus_api.config import Settings
 from campus_api.database_security import verify_runtime_database
@@ -91,4 +92,12 @@ def create_app(settings: Settings | None = None):
     app.include_router(router)
     app.include_router(vault_router)
     app.include_router(document_router)
+
+    @app.get("/v1/private-access", dependencies=[Depends(require_private_context)])
+    def private_access():
+        return {
+            "policy_enforced": bool(app.state.settings.oidc_private_auth_context),
+            "documents_available": app.state.document_store is not None,
+        }
+
     return app

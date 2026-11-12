@@ -97,3 +97,7 @@ Fonts: [Defender Event Grid configuration](https://learn.microsoft.com/en-us/azu
 Proves SQLite/PostgreSQL: estats, variants de veredicte, subjecte/ETag/compte incorrectes, duplicats/conflictes, checksums, fallades d’upload, versions, revocació i permisos de dos logins SQL limitats. Les proves de l’adaptador comproven els arguments de versió/If-Match de l’SDK Azure. Els tests Terraform són mocks; les proves d’Storage són dobles de prova, no una anàlisi real de Microsoft Defender.
 
 Encara cal validar a Azure identitats, xarxa, topic/queue trust, esquema natiu de l’event, escaneig net/infectat/no analitzable i recuperació/DLQ. Abans del pilot: MFA/step-up i federació real, quotes/rate limiting, neteja d’orfes, política de retenció/supressió de versions/backups, alertes operatives i revisió del conjunt. No hi ha pantalla d’upload ni desplegament actiu en aquest increment.
+
+## Increment posterior: portal i accés reforçat
+
+La interfície `/private`, el BFF de fitxers i la comprovació del context d’autenticació ja estan implementats. La prova real de prerequisits Azure ha retornat blocked perquè encara falten els serveis desplegats i la verificació de política. Consulteu [el resultat i els passos de validació](private-pilot-validation.md).

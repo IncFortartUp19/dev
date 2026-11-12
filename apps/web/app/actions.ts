@@ -2,6 +2,7 @@
 import { signIn, signOut } from "../auth";
 import { loginConfig, loginDestination } from "../lib/auth-config";
 import { redirect } from "next/navigation";
+import { privateClaims } from "../lib/private-policy";
 
 export async function loginAction(data: FormData) {
   if (!loginConfig()) redirect("/login");
@@ -11,4 +12,15 @@ export async function loginAction(data: FormData) {
 }
 export async function logoutAction() {
   await signOut({ redirectTo: "/login" });
+}
+
+export async function privateLoginAction() {
+  const config = loginConfig();
+  if (!config?.privateContext)
+    redirect("/login?next=/private&error=Configuration");
+  await signIn(
+    "campus-oidc",
+    { redirectTo: "/private" },
+    { claims: privateClaims(config.privateContext) },
+  );
 }

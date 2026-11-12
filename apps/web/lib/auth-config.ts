@@ -8,6 +8,7 @@ export type LoginConfig = {
   secret: string;
   prompt: string;
   secureCookies: boolean;
+  privateContext: string;
 };
 
 function trustedUrl(raw: string, originOnly: boolean): URL {
@@ -50,6 +51,8 @@ export function loginConfig(
     if (["127.0.0.1", "[::1]"].includes(origin.hostname)) return null;
     const api = trustedUrl(env.CAMPUS_API_URL!, true);
     trustedUrl(env.CAMPUS_OIDC_ISSUER!, false);
+    const privateContext = env.CAMPUS_PRIVATE_AUTH_CONTEXT ?? "";
+    if (privateContext && !/^c[1-9][0-9]?$/.test(privateContext)) return null;
     return {
       origin: origin.origin,
       apiOrigin: api.origin,
@@ -60,6 +63,7 @@ export function loginConfig(
       scope: env.CAMPUS_OIDC_SCOPE!,
       prompt: env.CAMPUS_OIDC_PROMPT ?? "select_account",
       secureCookies: origin.protocol === "https:",
+      privateContext,
     };
   } catch {
     return null;
@@ -67,5 +71,5 @@ export function loginConfig(
 }
 
 export function loginDestination(value: unknown): string {
-  return value === "/campus/join" ? "/campus/join" : "/campus";
+  return value === "/campus/join" || value === "/private" ? value : "/campus";
 }

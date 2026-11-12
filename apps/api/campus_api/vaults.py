@@ -4,14 +4,16 @@ from datetime import datetime
 from typing import Annotated, Literal
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Query, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from sqlalchemy import select
 
-from campus_api.auth import DB, Actor
+from campus_api.auth import DB, Actor, require_private_context
 from campus_api.models import ProjectVault, User, VaultEvent, VaultMembership
 from campus_api.schemas import Input, Output, Text100
 
-router = APIRouter(prefix="/v1/vaults", tags=["private projects"])
+router = APIRouter(
+    prefix="/v1/vaults", tags=["private projects"], dependencies=[Depends(require_private_context)]
+)
 Limit = Annotated[int, Query(ge=1, le=100)]
 Offset = Annotated[int, Query(ge=0, le=100000)]
 

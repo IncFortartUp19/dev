@@ -4,17 +4,21 @@ from pathlib import PurePosixPath
 from urllib.parse import quote, unquote
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy import select
 from starlette.concurrency import run_in_threadpool
 
-from campus_api.auth import DB, Actor
+from campus_api.auth import DB, Actor, require_private_context
 from campus_api.blob_store import MAX_BYTES, BlobRef, StorageFailure, checked_bytes
 from campus_api.models import ProjectVault, VaultDocument, VaultEvent
 from campus_api.schemas import Output
 from campus_api.vaults import Limit, Offset, member
 
-router = APIRouter(prefix="/v1/vaults/{vault_id}/documents", tags=["private documents"])
+router = APIRouter(
+    prefix="/v1/vaults/{vault_id}/documents",
+    tags=["private documents"],
+    dependencies=[Depends(require_private_context)],
+)
 
 
 class DocumentOut(Output):

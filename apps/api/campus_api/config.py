@@ -15,6 +15,7 @@ class Settings:
     oidc_jwks_url: str = ""
     oidc_required_scope: str = ""
     oidc_allowed_clients: tuple[str, ...] = ()
+    oidc_private_auth_context: str = ""
     cors_origins: tuple[str, ...] = ("http://localhost:3000",)
     documents_enabled: bool = False
     blob_account_url: str = ""
@@ -22,6 +23,16 @@ class Settings:
     blob_reader_client_id: str = ""
 
     def __post_init__(self):
+        if self.oidc_private_auth_context and not re.fullmatch(
+            r"c[1-9][0-9]?", self.oidc_private_auth_context
+        ):
+            raise ValueError("Use an explicit Entra authentication context such as c1.")
+        if (
+            self.environment == "production"
+            and self.documents_enabled
+            and not self.oidc_private_auth_context
+        ):
+            raise ValueError("Production documents require a private authentication context.")
         if self.documents_enabled:
             if not re.fullmatch(
                 r"https://[a-z0-9]{3,24}\.blob\.core\.windows\.net", self.blob_account_url
@@ -84,6 +95,7 @@ class Settings:
                 for value in os.getenv("OIDC_ALLOWED_CLIENTS", "").split(",")
                 if value.strip()
             ),
+            oidc_private_auth_context=os.getenv("OIDC_PRIVATE_AUTH_CONTEXT", ""),
             cors_origins=tuple(
                 value.strip()
                 for value in os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")

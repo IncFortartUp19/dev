@@ -456,6 +456,9 @@ export default function Campus() {
               )}
             </button>
           ))}
+          <a className="nav-item" href="/private">
+            <LockKeyhole size={19} /> Documents privats
+          </a>
         </nav>
         <div className="sidebar-spaces">
           <div className="workspace-label">
@@ -521,7 +524,9 @@ export default function Campus() {
             Campus <span>/</span> {project ? "Projecte" : view}
           </div>
           <div className="topbar-actions">
-            <a className="text-button" href="/lab">Laboratori</a>
+            <a className="text-button" href="/lab">
+              Laboratori
+            </a>
             <a href="/campus" className="text-button connected-link">
               Campus compartit <ArrowUpRight size={14} />
             </a>

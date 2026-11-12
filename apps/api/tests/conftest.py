@@ -1,12 +1,16 @@
 import os
+import time
 from dataclasses import replace
 from pathlib import Path
 from secrets import token_hex
+from types import SimpleNamespace
 from uuid import uuid4
 
+import jwt
 import pytest
 from alembic import command
 from alembic.config import Config
+from cryptography.hazmat.primitives.asymmetric import rsa
 from fastapi import HTTPException, Request
 from fastapi.testclient import TestClient
 from sqlalchemy import text
@@ -141,3 +145,33 @@ def protected_api(api):
         with admin.begin() as conn:
             conn.execute(text(f"DROP OWNED BY {role}"))
             conn.execute(text(f"DROP ROLE {role}"))
+
+
+@pytest.fixture
+def signed_api(api):
+    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    api.app.dependency_overrides.pop(get_principal)
+    api.app.state.settings = Settings(
+        database_url=api.settings.database_url,
+        oidc_issuer="https://identity.example/tenant",
+        oidc_audience="campus-api",
+        oidc_jwks_url="https://identity.example/tenant/jwks",
+    )
+    api.app.state.jwks = SimpleNamespace(
+        get_signing_key_from_jwt=lambda _token: SimpleNamespace(key=private_key.public_key())
+    )
+
+    def mint(**changes):
+        stamp = int(time.time())
+        payload = {
+            "iss": "https://identity.example/tenant",
+            "aud": "campus-api",
+            "sub": "user-123",
+            "iat": stamp,
+            "exp": stamp + 300,
+            "name": "Laia",
+        }
+        payload.update(changes)
+        return jwt.encode(payload, private_key, algorithm="RS256")
+
+    return api, mint

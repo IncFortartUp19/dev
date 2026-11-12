@@ -190,6 +190,10 @@ server = createServer(
         aud: "campus-api-e2e",
         scope: saved.scope,
         azp: clientId,
+        acrs:
+          JSON.parse(saved.claims ?? "{}").access_token?.acrs?.value === "c1"
+            ? ["c1"]
+            : [],
       });
       accessTokens.set(accessToken, shared);
       return json(response, {
@@ -213,6 +217,7 @@ const common = {
   OIDC_JWKS_URL: `${issuer}/jwks`,
   OIDC_REQUIRED_SCOPE: "campus.read",
   OIDC_ALLOWED_CLIENTS: clientId,
+  OIDC_PRIVATE_AUTH_CONTEXT: "c1",
   CORS_ORIGINS: origin,
   SSL_CERT_FILE: cert,
 };
@@ -246,7 +251,9 @@ try {
       apiRoot,
       "--frozen",
       "uvicorn",
-      "campus_api.main:create_app",
+      "private_api:create_test_app",
+      "--app-dir",
+      join(root, "tests/support"),
       "--factory",
       "--host",
       "127.0.0.1",
@@ -268,6 +275,7 @@ try {
       CAMPUS_OIDC_CLIENT_ID: clientId,
       CAMPUS_OIDC_CLIENT_SECRET: clientSecret,
       CAMPUS_OIDC_SCOPE: "openid profile email campus.read",
+      CAMPUS_PRIVATE_AUTH_CONTEXT: "c1",
       CAMPUS_MODE: "connected",
       NODE_EXTRA_CA_CERTS: cert,
       NEXT_TELEMETRY_DISABLED: "1",

@@ -2219,3 +2219,26 @@ textarea {
 .validation-lab textarea { display: block; width: 100%; resize: vertical; margin-top: 16px; }
 .validation-guidance { border-left: 4px solid var(--green); }
 @media (max-width: 680px) { .validation-grid { grid-template-columns: 1fr; } .validation-lab { padding: 20px 16px; } .validation-lab .page-heading { align-items: flex-start; } }
+
+.private-page { max-width: 1240px; margin: 0 auto; padding: 24px; }
+.private-header, .private-header nav { display: flex; gap: 20px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+.private-header { margin-bottom: 48px; }
+.private-header nav a { color: var(--green); }
+.private-grid { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 24px; }
+.private-page .panel { padding: 24px; min-width: 0; }
+.private-page p { line-height: 1.6; }
+.private-page h1, .private-page h2, .private-page h3 { overflow-wrap: anywhere; }
+.private-vaults { display: grid; gap: 10px; margin: 24px 0; }
+.private-vault { text-align: left; border: 1px solid var(--line); border-radius: 10px; padding: 16px; background: white; overflow-wrap: anywhere; }
+.private-vault span { display: block; font-size: 12px; color: var(--muted); margin-top: 6px; }
+.private-vault.selected { border-color: var(--green); background: #f0f5ef; }
+.private-create, .private-upload { display: grid; gap: 12px; margin-top: 24px; }
+.private-library-heading { display: flex; gap: 16px; justify-content: space-between; flex-wrap: wrap; align-items: center; }
+.private-document { display: flex; gap: 16px; align-items: center; border-top: 1px solid var(--line); padding: 20px 0; }
+.private-document > div { flex: 1; min-width: 0; }
+.private-document h3 { margin: 0; font-size: 16px; }
+.private-document p { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+.private-document-list { margin-top: 24px; }
+.private-empty { padding: 70px 24px; text-align: center; color: var(--muted); }
+.private-gate { max-width: 650px; margin: 32px auto; }
+@media (max-width: 760px) { .private-grid { grid-template-columns: minmax(0, 1fr); } .private-page { padding: 20px 16px; } .private-document { flex-wrap: wrap; } .private-header { gap: 24px; margin-bottom: 32px; } .private-header nav { gap: 12px; } .private-page input[type=file] { max-width: 100%; } }

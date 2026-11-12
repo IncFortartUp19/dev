@@ -52,3 +52,5 @@ La càrrega de documents al servidor queda pendent: els fitxers del prototip nom
 [Abast del MVP](../../docs/product/campus-mvp.md) · [Model de dades](../../docs/product/data-model.md) · [Login i mode connectat](../../docs/product/connected-campus.md).
 
 `/lab`: laboratori independent de validació (problema, públic, hipòtesi, experiment i aprenentatge). Esborrany en memòria amb exportació/importació JSON; no es desa al compte ni s’envia a una IA.
+
+`/private`: interfície de vaults/documents via BFF de cookie, amb step-up del proveïdor. `CAMPUS_PRIVATE_AUTH_CONTEXT` ha de coincidir amb `OIDC_PRIVATE_AUTH_CONTEXT` de l’API i una política MFA real d’Entra. Les proves de navegador simulen el proveïdor i Storage, sense configurar MFA real ni crear serveis Azure. Vegeu [validació del pilot](../../docs/product/private-pilot-validation.md).

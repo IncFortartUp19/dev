@@ -332,6 +332,9 @@ export function ConnectedCampus() {
         </Link>
         <div className="workspace-label">ELS TEUS ESPAIS</div>
         <nav aria-label="Espais del teu compte">
+          <Link className="text-button" href="/private">
+            Documents privats
+          </Link>
           {spaces.map((s) => (
             <button
               className={`nav-item ${spaceId === s.id ? "active" : ""}`}
@@ -380,7 +383,9 @@ export function ConnectedCampus() {
             {space?.title ?? "Els teus espais"}
           </span>
           <div className="topbar-actions">
-            <Link className="text-button" href="/lab">Laboratori</Link>
+            <Link className="text-button" href="/lab">
+              Laboratori
+            </Link>
             <span className="demo-pill">
               <span />
               Compte connectat

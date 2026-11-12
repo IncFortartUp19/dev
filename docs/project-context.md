@@ -38,3 +38,7 @@ La primera API Campus és a `apps/api`; el frontend encara és una demostració 
 ## Connexió entre frontend i API
 
 S’ha afegit login OIDC configurable, proxy BFF amb cookies HttpOnly i el mode Campus connectat. Es manté `/demo` separat. El recorregut entre professor i alumne s’ha preparat per provar amb dues sessions independents: el professor convida i avalua amb el seu compte, i l’alumne presenta amb el seu; els permisos depenen de cada espai. Encara cal configurar el proveïdor real abans del pilot. No es modifiquen Azure, els dominis, el correu ni les dades de BeFirst.
+
+## Estat comprovat el 12 de novembre de 2026
+
+El backend ja inclou vaults, RLS i circuit de documents; `/private` afegeix interfície i exigència de context signat per a l’accés reforçat. La comprovació real via GitHub OIDC confirma només la base de xarxa/Key Vault/logs/identitat al grup dev: no s’han desplegat document Storage, Event Grid, Service Bus, PostgreSQL ni Container Apps. La política MFA no s’ha pogut verificar amb la identitat disponible. La validació real del pilot continua bloquejada; vegeu `docs/product/private-pilot-validation.md`.

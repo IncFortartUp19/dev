@@ -1,3 +1,5 @@
+import base64
+import json
 from dataclasses import dataclass
 from typing import Annotated
 
@@ -19,6 +21,7 @@ DB = Annotated[Session, Depends(get_db)]
 class Principal:
     subject: str
     display_name: str
+    auth_contexts: tuple[str, ...] = ()
 
 
 def unauthorized():
@@ -70,6 +73,10 @@ def get_principal(
         return Principal(
             subject=f"{settings.oidc_issuer}|{claims['sub']}",
             display_name=name[:100] if isinstance(name, str) and name.strip() else "Campus user",
+            auth_contexts=tuple(claims["acrs"])
+            if isinstance(claims.get("acrs"), list)
+            and all(isinstance(c, str) and len(c) <= 100 for c in claims["acrs"])
+            else (),
         )
     except (jwt.PyJWTError, ValueError, TypeError) as exc:
         raise unauthorized() from exc
@@ -93,3 +100,24 @@ def get_actor(db: DB, principal: Annotated[Principal, Depends(get_principal)]) -
 
 
 Actor = Annotated[User, Depends(get_actor)]
+
+
+def require_private_context(
+    request: Request, principal: Annotated[Principal, Depends(get_principal)]
+):
+    settings = request.app.state.settings
+    context = settings.oidc_private_auth_context
+    if not context:
+        if settings.environment == "production":
+            raise HTTPException(503, "Private authentication policy is not configured")
+        return  # Development only; never presented as real MFA verification.
+    if context not in principal.auth_contexts:
+        claims = json.dumps(
+            {"access_token": {"acrs": {"essential": True, "value": context}}}, separators=(",", ":")
+        )
+        encoded = base64.b64encode(claims.encode()).decode()
+        raise HTTPException(
+            401,
+            {"code": "step_up_required", "message": "Reauthenticate for private project access"},
+            headers={"WWW-Authenticate": f'Bearer error="insufficient_claims", claims="{encoded}"'},
+        )
