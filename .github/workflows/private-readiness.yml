@@ -1,0 +1,39 @@
+name: Private documents Azure preflight
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: dev
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Inspect real Azure and Entra prerequisites (read-only)
+        env:
+          DOCS_STORAGE_ACCOUNT_ID: ${{ vars.DOCS_STORAGE_ACCOUNT_ID }}
+          DOCS_EVENT_GRID_TOPIC_ID: ${{ vars.DOCS_EVENT_GRID_TOPIC_ID }}
+          DOCS_SERVICE_BUS_NAMESPACE_ID: ${{ vars.DOCS_SERVICE_BUS_NAMESPACE_ID }}
+          PRIVATE_AUTH_CONTEXT: c1
+          READINESS_REPORT: ${{ runner.temp }}/private-readiness.json
+        run: python3 apps/api/campus_api/azure_readiness.py
+      - name: Preserve sanitized preflight evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: private-preflight
+          path: ${{ runner.temp }}/private-readiness.json
+          retention-days: 1
+          if-no-files-found: warn
