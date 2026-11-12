@@ -61,7 +61,7 @@ flowchart LR
 
 ## Segona barrera i Azure
 
-Abans d’admetre documents sensibles: PostgreSQL RLS obligatòria per vault amb rol d’aplicació sense BYPASSRLS ni privilegis de propietari/superusuari. Context d’usuari per transacció des de la identitat autenticada, mai des d’un header d’usuari. Provar context absent, consultes sense filtre, reutilització de connexions i treballs asíncrons. **Actualització:** la migració `0003` ja implementa RLS forçada als vaults. Vegeu [implementació, permisos SQL i base Blob](rls-and-document-storage.md). Les taules de documents encara no existeixen.
+Abans d’admetre documents sensibles: PostgreSQL RLS obligatòria per vault amb rol d’aplicació sense BYPASSRLS ni privilegis de propietari/superusuari. Context d’usuari per transacció des de la identitat autenticada, mai des d’un header d’usuari. Provar context absent, consultes sense filtre, reutilització de connexions i treballs asíncrons. **Actualització:** la migració `0003` ja implementa RLS forçada als vaults. Vegeu [implementació, permisos SQL i base Blob](rls-and-document-storage.md). La migració `0004` i [el circuit de documents](private-document-pipeline.md) afegeixen documents amb RLS, encara deshabilitats per defecte.
 
 Blob/PostgreSQL sense accés públic, Private Endpoints/DNS i identitats gestionades de mínim privilegi. Desactivar accés anònim i Shared Key al storage. Separar identitats de càrrega, anàlisi i lectura quan el disseny ho permeti. La identitat de desplegament GitHub no ha de llegir habitualment documents.
 

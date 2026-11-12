@@ -22,6 +22,14 @@ variable "scan_results_event_grid_topic_id" {
 variable "upload_principal_id" { type = string }
 variable "reader_principal_id" { type = string }
 variable "promotion_principal_id" { type = string }
+variable "service_bus_namespace_id" {
+  type        = string
+  description = "Existing private Service Bus namespace with local authentication disabled."
+}
+variable "scan_delivery_principal_id" {
+  type        = string
+  description = "System-assigned principal of the custom Event Grid topic; required for trusted delivery through Service Bus firewall."
+}
 variable "scan_cap_gb_per_month" {
   type    = number
   default = 10

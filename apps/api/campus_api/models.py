@@ -174,3 +174,61 @@ class VaultEvent(Base):
             name="fk_event_vault_owner",
         ),
     )
+
+
+class VaultDocument(Base):
+    __tablename__ = "vault_documents"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=identifier)
+    vault_id: Mapped[str] = mapped_column(ForeignKey("project_vaults.id"), index=True)
+    owner_id: Mapped[str] = mapped_column(String(36))
+    uploaded_by: Mapped[str] = mapped_column(ForeignKey("users.id"))
+    filename: Mapped[str] = mapped_column(String(180))
+    media_type: Mapped[str] = mapped_column(String(40))
+    size: Mapped[int]
+    sha256: Mapped[str] = mapped_column(String(64))
+    status: Mapped[str] = mapped_column(String(16), default="uploading")
+    source_etag: Mapped[str | None] = mapped_column(String(100))
+    source_version: Mapped[str | None] = mapped_column(String(100))
+    released_etag: Mapped[str | None] = mapped_column(String(100))
+    released_version: Mapped[str | None] = mapped_column(String(100))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["vault_id", "owner_id"],
+            ["project_vaults.id", "project_vaults.created_by"],
+            name="fk_document_vault_owner",
+        ),
+        CheckConstraint(
+            "status IN ('uploading', 'quarantined', 'released', 'blocked', 'failed')",
+            name="ck_document_status",
+        ),
+        CheckConstraint("size > 0 AND size <= 10485760", name="ck_document_size"),
+        CheckConstraint(
+            "status NOT IN ('quarantined','released') OR "
+            "(source_etag IS NOT NULL AND source_version IS NOT NULL "
+            "AND source_etag <> '' AND source_version <> '')",
+            name="ck_document_source_version",
+        ),
+        CheckConstraint(
+            "status <> 'released' OR (released_etag IS NOT NULL AND released_version IS NOT NULL)",
+            name="ck_document_released_version",
+        ),
+        Index("uq_document_vault", "id", "vault_id", unique=True),
+    )
+
+
+class ScanReceipt(Base):
+    __tablename__ = "document_scan_receipts"
+    id: Mapped[str] = mapped_column(String(128), primary_key=True)
+    document_id: Mapped[str] = mapped_column(String(36))
+    vault_id: Mapped[str] = mapped_column(String(36), index=True)
+    event_sha256: Mapped[str] = mapped_column(String(64))
+    outcome: Mapped[str] = mapped_column(String(16))
+    received_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["document_id", "vault_id"],
+            ["vault_documents.id", "vault_documents.vault_id"],
+            name="fk_receipt_document_vault",
+        ),
+    )

@@ -1,4 +1,9 @@
 mock_provider "azurerm" {
+  mock_resource "azurerm_servicebus_queue" {
+    defaults = {
+      id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ServiceBus/namespaces/private/queues/scans"
+    }
+  }
   mock_resource "azurerm_storage_account" {
     defaults = {
       id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.Storage/storageAccounts/incfsdocumentstest"
@@ -15,6 +20,8 @@ variables {
   upload_principal_id              = "00000000-0000-0000-0000-000000000001"
   reader_principal_id              = "00000000-0000-0000-0000-000000000002"
   promotion_principal_id           = "00000000-0000-0000-0000-000000000003"
+  service_bus_namespace_id         = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test/providers/Microsoft.ServiceBus/namespaces/private"
+  scan_delivery_principal_id       = "00000000-0000-0000-0000-000000000004"
 }
 
 run "private_quarantine_and_released_storage" {
@@ -38,6 +45,10 @@ run "private_quarantine_and_released_storage" {
   assert {
     condition     = endswith(azurerm_role_assignment.read.scope, "/containers/released") && azurerm_role_assignment.read.role_definition_name == "Storage Blob Data Reader" && endswith(azurerm_role_assignment.upload.scope, "/containers/quarantine")
     error_message = "Read and upload identities must be container-scoped."
+  }
+  assert {
+    condition     = azurerm_eventgrid_event_subscription.scans.event_delivery_schema == "EventGridSchema" && azurerm_eventgrid_event_subscription.scans.included_event_types == tolist(["Microsoft.Security.MalwareScanningResult"]) && azurerm_eventgrid_event_subscription.scans.delivery_identity[0].type == "SystemAssigned" && azurerm_role_assignment.scan_delivery.role_definition_name == "Azure Service Bus Data Sender" && azurerm_role_assignment.scan_receive.role_definition_name == "Azure Service Bus Data Receiver" && azurerm_servicebus_queue.scans.max_delivery_count == 10
+    error_message = "Only Defender events must reach the queue using separate sender/receiver identities."
   }
 }
 

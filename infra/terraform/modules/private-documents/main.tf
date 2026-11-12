@@ -16,8 +16,8 @@ resource "azurerm_storage_account" "documents" {
 
   lifecycle {
     precondition {
-      condition     = length(toset([for id in [var.upload_principal_id, var.reader_principal_id, var.promotion_principal_id] : lower(id)])) == 3
-      error_message = "Upload, reader and promotion must use three different service identities."
+      condition     = length(toset([for id in [var.upload_principal_id, var.reader_principal_id, var.promotion_principal_id, var.scan_delivery_principal_id] : lower(id)])) == 4
+      error_message = "Upload, reader, promotion and Event Grid delivery must use four different identities."
     }
   }
 
@@ -92,4 +92,47 @@ resource "azurerm_role_assignment" "promote" {
   scope                = each.value
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = var.promotion_principal_id
+}
+
+resource "azurerm_servicebus_queue" "scans" {
+  name                                 = "${var.storage_account_name}-scans"
+  namespace_id                         = var.service_bus_namespace_id
+  lock_duration                        = "PT1M"
+  max_delivery_count                   = 10
+  default_message_ttl                  = "P7D"
+  dead_lettering_on_message_expiration = true
+}
+
+resource "azurerm_role_assignment" "scan_delivery" {
+  scope                = azurerm_servicebus_queue.scans.id
+  role_definition_name = "Azure Service Bus Data Sender"
+  principal_id         = var.scan_delivery_principal_id
+}
+
+resource "azurerm_role_assignment" "scan_receive" {
+  scope                = azurerm_servicebus_queue.scans.id
+  role_definition_name = "Azure Service Bus Data Receiver"
+  principal_id         = var.promotion_principal_id
+}
+
+resource "azurerm_eventgrid_event_subscription" "scans" {
+  name                          = "${var.storage_account_name}-malware-results"
+  scope                         = var.scan_results_event_grid_topic_id
+  included_event_types          = ["Microsoft.Security.MalwareScanningResult"]
+  event_delivery_schema         = "EventGridSchema"
+  service_bus_queue_endpoint_id = azurerm_servicebus_queue.scans.id
+  advanced_filter {
+    string_begins_with {
+      key    = "data.blobUri"
+      values = ["https://${var.storage_account_name}.blob.core.windows.net/quarantine/", "https://${var.storage_account_name}.blob.core.windows.net/released/"]
+    }
+  }
+  delivery_identity {
+    type = "SystemAssigned"
+  }
+  retry_policy {
+    max_delivery_attempts = 30
+    event_time_to_live    = 1440
+  }
+  depends_on = [azurerm_role_assignment.scan_delivery]
 }

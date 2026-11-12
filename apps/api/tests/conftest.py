@@ -1,15 +1,20 @@
 import os
+from dataclasses import replace
 from pathlib import Path
+from secrets import token_hex
+from uuid import uuid4
 
 import pytest
 from alembic import command
 from alembic.config import Config
 from fastapi import HTTPException, Request
 from fastapi.testclient import TestClient
+from sqlalchemy import text
 from sqlalchemy.engine import make_url
 
 from campus_api.auth import Principal, get_principal
 from campus_api.config import Settings
+from campus_api.db import make_engine
 from campus_api.main import create_app
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -99,3 +104,40 @@ def api(tmp_path):
             yield Harness(app, client, settings)
     finally:
         command.downgrade(config, "base")
+
+
+@pytest.fixture
+def protected_api(api):
+    admin = api.app.state.engine
+    if admin.dialect.name != "postgresql":
+        pytest.skip("PostgreSQL RLS is exercised in the PostgreSQL CI job")
+    role = "rls_test_" + uuid4().hex
+    password = token_hex(24)
+    with admin.begin() as conn:
+        conn.execute(
+            text(f"CREATE ROLE {role} LOGIN NOSUPERUSER NOBYPASSRLS PASSWORD '{password}'")
+        )
+        conn.execute(text(f"GRANT USAGE ON SCHEMA public TO {role}"))
+        conn.execute(text(f"GRANT SELECT, INSERT ON users TO {role}"))
+        # Extra UPDATE/DELETE permissions prove that policies, not missing SQL grants,
+        # reject attempts to rewrite ownership or tamper with events.
+        conn.execute(
+            text(
+                "GRANT SELECT, INSERT, UPDATE, DELETE ON project_vaults, "
+                f"vault_memberships, vault_events TO {role}"
+            )
+        )
+    url = make_url(api.settings.prepare_database_url()).set(username=role, password=password)
+    limited = make_engine(
+        replace(api.settings, database_url=url.render_as_string(hide_password=False))
+    )
+
+    api.app.state.engine = limited
+    try:
+        yield api, limited, admin
+    finally:
+        api.app.state.engine = admin
+        limited.dispose()
+        with admin.begin() as conn:
+            conn.execute(text(f"DROP OWNED BY {role}"))
+            conn.execute(text(f"DROP ROLE {role}"))

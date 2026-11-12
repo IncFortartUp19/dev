@@ -23,7 +23,7 @@ Separar sempre:
 - **Migracions:** rol administratiu que gestiona esquema i polítiques; no s’utilitza al servidor web.
 - **Runtime:** login amb privilegis de dades mínims i sense propietat d’esquema/taules, superusuari, CREATEROLE ni BYPASSRLS. La base de concessions és `apps/api/scripts/runtime-role.sql`; executar-la una vegada com a administrador després de les migracions i assignar el rol al login real.
 
-En `APP_ENV=production`, l’API comprova en arrencar que les tres taules existeixen amb RLS forçada i que ni el rol actual ni el login original tenen pertinença a rols superusuari/BYPASSRLS o propietaris d’aquestes taules. Arrencar amb el compte de migracions falla. La contrasenya/identitat SQL real no es crea amb aquest repositori.
+En `APP_ENV=production`, l’API comprova en arrencar que les cinc taules existeixen després de la migració 0004 amb RLS forçada i que ni el rol actual ni el login original tenen pertinença a rols superusuari/BYPASSRLS o propietaris d’aquestes taules. Arrencar amb el compte de migracions falla. La contrasenya/identitat SQL real no es crea amb aquest repositori.
 
 RLS no protegeix davant d’un administrador de DB, credencials privilegiades compromeses ni execució SQL arbitrària que pugui canviar el context. No autoritzar consultes lliures del client; aplicar mínim privilegi, parametrizació i control de serveis també fora de la DB.
 
@@ -48,7 +48,7 @@ S’executen al job PostgreSQL 16 de GitHub; es marquen skipped a SQLite. El rol
 
 Inclou StorageV2 a France Central per defecte, sense endpoint públic, Shared Key, blobs anònims ni rèplica entre tenants; TLS 1.2, versions i soft-delete de set dies; contenidors `quarantine` i `released`; Private Endpoint de Blob amb zona DNS existent; Defender for Storage amb anàlisi on-upload i límit explícit de GB/mes.
 
-Requereix tres principals tècnics diferents:
+Requereix tres principals de Storage diferents (i posteriorment un quart de lliurament Event Grid):
 
 - Càrrega: Blob Data Contributor només a quarantine.
 - Lectura: Blob Data Reader només a released.
@@ -56,13 +56,13 @@ Requereix tres principals tècnics diferents:
 
 El rol builtin Contributor inclou lectura i esborrat dins del contenidor; no és un rol write-only. Cap d’aquestes identitats s’entrega a un participant. Un servei amb aquestes credencials continua sent una frontera privilegiada; l’autorització de cada document ha de quedar a l’API. La descoberta de dades sensibles està desactivada; l’anàlisi de malware és la funcionalitat configurada.
 
-El mòdul rep una zona `privatelink.blob.core.windows.net` ja vinculada a la VNet i un topic Event Grid custom per resultats de Defender. Encara no crea el consumidor autenticat de resultats. La configuració de xarxa admet el bypass AzureServices per la integració de serveis de confiança, amb l’accés públic desactivat. Cal verificar la compatibilitat real de Defender, Event Grid, DNS i xarxa a la subscripció/regió abans de donar-la per operativa.
+El mòdul rep una zona `privatelink.blob.core.windows.net` ja vinculada a la VNet i un topic Event Grid custom per resultats de Defender. La primera versió només preparava infraestructura; la [migració 0004 i el circuit posterior](private-document-pipeline.md) afegeixen consumidor, cua i API, encara sense desplegar. La configuració de xarxa admet el bypass AzureServices per la integració de serveis de confiança, amb l’accés públic desactivat. Cal verificar la compatibilitat real de Defender, Event Grid, DNS i xarxa a la subscripció/regió abans de donar-la per operativa.
 
 Els tests Terraform usen un provider mock: comproven configuració i separació de rols, no connectivitat real, detecció de malware, permisos de Microsoft ni costos. Defender, scans i Storage comportaran costos en aplicar el mòdul; el límit de scans no és un límit total de facturació. Si s’esgota, tot document sense resultat verificat ha de continuar bloquejat.
 
 ## Encara no s’habilita la càrrega sensible
 
-Falta implementar la taula de documents amb RLS, el proxy de càrrega i descàrrega, el consumidor autenticat/idempotent de resultats i la promoció de versió exacta a released. No confiar en tags editables del blob, un resultat enviat pel navegador o un nom de fitxer. Vincular resultat a storage account, blob, versió/ETag i comprovació de contingut; resultats absents, sospitosos, duplicats o fora d’ordre no poden alliberar el fitxer.
+Actualització: la [implementació posterior](private-document-pipeline.md) incorpora aquestes peces amb RLS i rols separats. Encara cal configurar i verificar la integració a Azure abans d’activar la càrrega. No confiar en tags editables del blob, un resultat enviat pel navegador o un nom de fitxer. Vincular resultat a storage account, blob, versió/ETag i comprovació de contingut; resultats absents, sospitosos, duplicats o fora d’ordre no poden alliberar el fitxer.
 
 En descàrrega: comprovar membresia actual, projecte del document, estat alliberat i versió; respondre com attachment amb no-store/nosniff i auditar. Sense URLs públiques ni SAS reutilitzables de llarga durada. Un fitxer ja descarregat no es pot revocar.
 

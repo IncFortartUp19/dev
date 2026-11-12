@@ -72,6 +72,14 @@ La migració `0002` afegeix vaults amb membresies pròpies. `POST /v1/vaults` re
 
 No s’hereten permisos docents ni d’altres projectes. No es vinculen comptes per email. El destinatari ja ha d’haver iniciat sessió a l’API; el propietari ha de verificar el seu ID per un canal conegut. La interfície d’incorporació i el flux de sol·licitud/acceptació resten pendents. Els registres d’auditoria d’aquesta fase no són immutables contra administradors.
 
-La migració `0003` aplica RLS forçada a PostgreSQL per vaults, membresies i esdeveniments. Encara no hi ha càrrega sensible ni integració de documents amb Blob. Consulta [l’arquitectura i criteris d’activació](../../docs/product/private-startup-security.md). Les respostes `/v1/` són no-store; els access tokens admeten una audiència única. En desenvolupament, scope/client són opcionals per compatibilitat amb proves; en producció són obligatoris.
+La migració `0003` aplica RLS forçada a PostgreSQL per vaults, membresies i esdeveniments. La migració `0004` i el circuit de documents privats afegeixen quarantena, consumidor Service Bus i descàrrega amb checksum; es mantenen deshabilitats per defecte i sense desplegar. Consulta [l’arquitectura i criteris d’activació](../../docs/product/private-startup-security.md). Les respostes `/v1/` són no-store; els access tokens admeten una audiència única. En desenvolupament, scope/client són opcionals per compatibilitat amb proves; en producció són obligatoris.
 
 En producció, arrencar amb un rol propietari, superusuari o BYPASSRLS falla. Les migracions requereixen un compte separat del runtime; les concessions inicials són a `scripts/runtime-role.sql`. Consulta [RLS i preparació de Blob](../../docs/product/rls-and-document-storage.md). Els tests RLS realment connecten amb un login limitat al job PostgreSQL.
+
+## Circuit de documents privats
+
+[Configuració, API i límits](../../docs/product/private-document-pipeline.md). `POST /v1/vaults/{id}/documents` rep cos binari PDF/TXT de fins a 10 MiB, Content-Type i X-File-Name percent-encoded UTF-8. Només owner/contributor pot pujar. El GET de documents llista metadades del projecte; `GET /v1/vaults/{id}/documents/{document_id}/content` exigeix membre actual i estat released, amb versió/ETag i checksum verificats.
+
+`DOCUMENTS_ENABLED=false` per defecte. Per activar a Azure cal BLOB_ACCOUNT_URL i client IDs de Managed Identity separats per càrrega/lectura; no hi ha fallback de claus, CLI, disc o memòria. El consumidor `uv run --env-file .env.scanner python -m campus_api.scan_worker` utilitza un login SQL diferent i el grup incfs_scanner. No exposa callbacks de veredicte a HTTP. La migració necessita CREATEROLE per als grups NOLOGIN incfs_documents_api/incfs_scanner; el login d’API mai ha de pertànyer al segon.
+
+Les proves de negoci de Storage són dobles de prova explícits i no representen una anàlisi real de Defender. Els tests PostgreSQL connecten amb dos logins limitats diferents per comprovar que el compte de participants no pot alliberar documents. Cal validar la integració real de xarxa i escàner abans d’activar-la. La interfície Campus i les entregues acadèmiques continuen separades.

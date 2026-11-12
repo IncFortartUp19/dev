@@ -1,7 +1,9 @@
 import os
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlparse
+from uuid import UUID
 
 
 @dataclass(frozen=True)
@@ -14,8 +16,23 @@ class Settings:
     oidc_required_scope: str = ""
     oidc_allowed_clients: tuple[str, ...] = ()
     cors_origins: tuple[str, ...] = ("http://localhost:3000",)
+    documents_enabled: bool = False
+    blob_account_url: str = ""
+    blob_upload_client_id: str = ""
+    blob_reader_client_id: str = ""
 
     def __post_init__(self):
+        if self.documents_enabled:
+            if not re.fullmatch(
+                r"https://[a-z0-9]{3,24}\.blob\.core\.windows\.net", self.blob_account_url
+            ):
+                raise ValueError("Documents require an exact Azure Blob account HTTPS origin.")
+            if (
+                not self.blob_upload_client_id
+                or not self.blob_reader_client_id
+                or UUID(self.blob_upload_client_id) == UUID(self.blob_reader_client_id)
+            ):
+                raise ValueError("Use separate upload and reader managed identities.")
         configured = (self.oidc_issuer, self.oidc_audience, self.oidc_jwks_url)
         if any(configured) and not all(configured):
             raise ValueError("Configure issuer, audience and JWKS URL together.")
@@ -54,6 +71,10 @@ class Settings:
         return cls(
             database_url=os.getenv("DATABASE_URL", "sqlite:///.data/campus.db"),
             environment=os.getenv("APP_ENV", "development"),
+            documents_enabled=os.getenv("DOCUMENTS_ENABLED", "false") == "true",
+            blob_account_url=os.getenv("BLOB_ACCOUNT_URL", ""),
+            blob_upload_client_id=os.getenv("BLOB_UPLOAD_CLIENT_ID", ""),
+            blob_reader_client_id=os.getenv("BLOB_READER_CLIENT_ID", ""),
             oidc_issuer=os.getenv("OIDC_ISSUER", ""),
             oidc_audience=os.getenv("OIDC_AUDIENCE", ""),
             oidc_jwks_url=os.getenv("OIDC_JWKS_URL", ""),

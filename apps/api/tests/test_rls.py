@@ -1,54 +1,14 @@
 """Real PostgreSQL policies, deliberately using an unprivileged database role."""
 
-from dataclasses import replace
-from secrets import token_hex
 from uuid import uuid4
 
 import pytest
 from sqlalchemy import text
-from sqlalchemy.engine import make_url
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm import Session
 
 from campus_api.database_security import verify_runtime_database
-from campus_api.db import bind_actor, make_engine
-
-
-@pytest.fixture
-def protected_api(api):
-    admin = api.app.state.engine
-    if admin.dialect.name != "postgresql":
-        pytest.skip("PostgreSQL RLS is exercised in the PostgreSQL CI job")
-    role = "rls_test_" + uuid4().hex
-    password = token_hex(24)
-    with admin.begin() as conn:
-        conn.execute(
-            text(f"CREATE ROLE {role} LOGIN NOSUPERUSER NOBYPASSRLS PASSWORD '{password}'")
-        )
-        conn.execute(text(f"GRANT USAGE ON SCHEMA public TO {role}"))
-        conn.execute(text(f"GRANT SELECT, INSERT ON users TO {role}"))
-        # Extra UPDATE/DELETE permissions prove that policies, not missing SQL grants,
-        # reject attempts to rewrite ownership or tamper with events.
-        conn.execute(
-            text(
-                "GRANT SELECT, INSERT, UPDATE, DELETE ON project_vaults, "
-                f"vault_memberships, vault_events TO {role}"
-            )
-        )
-    url = make_url(api.settings.prepare_database_url()).set(username=role, password=password)
-    limited = make_engine(
-        replace(api.settings, database_url=url.render_as_string(hide_password=False))
-    )
-
-    api.app.state.engine = limited
-    try:
-        yield api, limited, admin
-    finally:
-        api.app.state.engine = admin
-        limited.dispose()
-        with admin.begin() as conn:
-            conn.execute(text(f"DROP OWNED BY {role}"))
-            conn.execute(text(f"DROP ROLE {role}"))
+from campus_api.db import bind_actor
 
 
 def create(api, actor):
