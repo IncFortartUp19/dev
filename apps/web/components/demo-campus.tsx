@@ -527,6 +527,9 @@ export default function Campus() {
             <a className="text-button" href="/lab">
               Laboratori
             </a>
+            <a className="text-button" href="/projectes">
+              Direcció de projectes
+            </a>
             <a href="/campus" className="text-button connected-link">
               Campus compartit <ArrowUpRight size={14} />
             </a>

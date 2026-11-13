@@ -1,0 +1,132 @@
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(20px, 5vw, 64px);
+  display: grid;
+  gap: 18px;
+  color: #25382f;
+}
+.header {
+  padding: clamp(22px, 4vw, 48px);
+  background: #254c3a;
+  color: #f9fcf1;
+  border-radius: 18px;
+}
+.back {
+  display: inline-block;
+  color: #d6e8b7;
+  margin-bottom: 14px;
+}
+.header h1 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  letter-spacing: -.055em;
+  line-height: 1.08;
+  margin-bottom: 10px;
+}
+.panel {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  padding: clamp(16px, 3vw, 28px);
+  border: 1px solid #dce0d5;
+  border-radius: 14px;
+  background: #fffefa;
+  min-width: 0;
+}
+.panel p {
+  color: #4f6256;
+  line-height: 1.55;
+}
+.sectionHeading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.sectionHeading span {
+  color: #4f6256;
+}
+.phases, .columns {
+  display: grid;
+  gap: 12px;
+}
+.phases {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.columns {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+.phase {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 12px;
+  background: #f1f4eb;
+  border-radius: 8px;
+}
+.phase h3 {
+  font-size: 1rem;
+}
+.field {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 650;
+}
+.field input, .field select, .field textarea {
+  background: white;
+  border: 1px solid #879888;
+  padding: 8px;
+  border-radius: 6px;
+  width: 100%;
+  font-weight: 400;
+}
+.addTask, .brief {
+  display: grid;
+  gap: 12px;
+}
+.addTask {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto;
+  align-items: end;
+}
+.primary, .secondary {
+  justify-self: start;
+  padding: 9px 14px;
+  border: 1px solid #254c3a;
+  border-radius: 6px;
+  font-weight: 750;
+}
+.primary {
+  color: white;
+  background: #254c3a;
+}
+.palette {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.palette li {
+  font-size: .72rem;
+  overflow-wrap: anywhere;
+}
+.palette span {
+  display: block;
+  min-height: 38px;
+  border: 1px solid #879888;
+  border-radius: 5px;
+  margin-bottom: 4px;
+}
+.status {
+  min-height: 1.4em;
+}
+@media (max-width: 820px) {
+  .phases { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .phases, .columns, .addTask { grid-template-columns: minmax(0, 1fr); }
+}
