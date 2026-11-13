@@ -1,0 +1,15 @@
+/* DEV preview: the pieces converge on the central entry before opening the workspace. */
+.entry-dev-badge{position:fixed;bottom:12px;left:12px;z-index:20;font:10px/1.4 Arial,sans-serif;color:#c8d8e8;background:#101925e8;border:1px solid #65788a;padding:7px 10px;border-radius:5px;pointer-events:none}
+.dimension-entering .dimension-fragments .fragment{animation:inc-converge .65s cubic-bezier(.65,0,.3,1) forwards}
+.dimension-entering .fragment-book,.dimension-entering .fragment-idea{--entry-x:170px}
+.dimension-entering .fragment-tech,.dimension-entering .fragment-science{--entry-x:-170px}
+.dimension-entering .fragment-book,.dimension-entering .fragment-tech{--entry-y:100px}
+.dimension-entering .fragment-idea,.dimension-entering .fragment-science{--entry-y:-100px}
+.dimension-entering .dimension-core{animation:inc-cross .65s ease-in forwards;pointer-events:none}
+.dimension-entering .dimension-rings{animation:inc-open .65s ease-in forwards}
+.dimension-entering .dimension-copy{transition:opacity .5s;opacity:.2}
+@keyframes inc-converge{to{transform:translate(var(--entry-x),var(--entry-y)) rotate(0) scale(.2);opacity:0}}
+@keyframes inc-cross{60%{transform:scale(1.12);box-shadow:0 0 100px #8ae6ff44}100%{transform:scale(1.55);opacity:0}}
+@keyframes inc-open{to{transform:scale(1.65);opacity:0}}
+@media(max-width:720px){.dimension-entering .fragment-book,.dimension-entering .fragment-idea{--entry-x:60px}.dimension-entering .fragment-tech,.dimension-entering .fragment-science{--entry-x:-60px}.entry-dev-badge{font-size:8px;bottom:6px;left:6px}}
+@media(prefers-reduced-motion:reduce){.dimension-entering *{animation:none!important;transition:none!important}}
