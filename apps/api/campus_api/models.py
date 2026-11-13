@@ -232,3 +232,24 @@ class ScanReceipt(Base):
             name="fk_receipt_document_vault",
         ),
     )
+
+
+class KnowledgeSource(Base):
+    __tablename__ = "knowledge_sources"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=identifier)
+    vault_id: Mapped[str] = mapped_column(String(36), index=True)
+    owner_id: Mapped[str] = mapped_column(String(36))
+    title: Mapped[str] = mapped_column(String(100))
+    body: Mapped[str] = mapped_column(String(12000))
+    source_reference: Mapped[str] = mapped_column(String(500))
+    sha256: Mapped[str] = mapped_column(String(64))
+    approved_by: Mapped[str | None] = mapped_column(ForeignKey("users.id"))
+    status: Mapped[str] = mapped_column(String(16), default="draft")
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["vault_id", "owner_id"],
+            ["project_vaults.id", "project_vaults.created_by"],
+        ),
+        CheckConstraint("status IN ('draft', 'approved', 'withdrawn')"),
+        CheckConstraint("status <> 'approved' OR approved_by IS NOT NULL"),
+    )

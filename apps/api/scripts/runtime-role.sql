@@ -9,6 +9,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON spaces, space_memberships, teams,
   team_memberships, invitations, projects, submissions, reviews, audit_events TO incfs_api;
 GRANT SELECT, INSERT ON project_vaults, vault_events TO incfs_api;
 GRANT SELECT, INSERT, DELETE ON vault_memberships TO incfs_api;
+GRANT SELECT, INSERT, UPDATE ON knowledge_sources TO incfs_api;
 GRANT SELECT ON alembic_version TO incfs_api;
 GRANT incfs_documents_api TO incfs_api WITH INHERIT TRUE;
 COMMIT;
