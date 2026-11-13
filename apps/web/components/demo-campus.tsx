@@ -456,6 +456,9 @@ export default function Campus() {
               )}
             </button>
           ))}
+          <a className="nav-item" href="/projectes" title="Direcció de projectes">
+            <LayoutDashboard size={19} aria-hidden="true" /> Direcció de projectes
+          </a>
           <a className="nav-item" href="/private">
             <LockKeyhole size={19} /> Documents privats
           </a>

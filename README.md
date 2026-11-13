@@ -64,3 +64,5 @@ La proposta de continuïtat de Campus cap a validació i acompanyament és a [la
 [Circuit de documents privats](docs/product/private-document-pipeline.md): càrrega en quarantena, consumidor Service Bus separat i descàrrega autoritzada amb versió/checksum; deshabilitat per defecte fins a validar la integració Azure.
 
 [Portal privat, context MFA i validació del pilot](docs/product/private-pilot-validation.md): interfície `/private`, accés reforçat al servidor i resultat de la comprovació real de prerequisits Azure.
+
+[Direcció de projectes i interiorisme](docs/product/project-direction.md): prototip a `/projectes` amb planificació predictiva i adaptativa, direcció visual i exportació de plans. La guia defineix el traspàs privat d’aprenentatges dels projectes incubats a la futura IA interna.
