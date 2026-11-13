@@ -13,6 +13,7 @@ from campus_api.config import Settings
 from campus_api.database_security import verify_runtime_database
 from campus_api.db import make_engine
 from campus_api.documents import router as document_router
+from campus_api.knowledge import router as knowledge_router
 from campus_api.routes import router
 from campus_api.vaults import router as vault_router
 
@@ -91,6 +92,7 @@ def create_app(settings: Settings | None = None):
 
     app.include_router(router)
     app.include_router(vault_router)
+    app.include_router(knowledge_router)
     app.include_router(document_router)
 
     @app.get("/v1/private-access", dependencies=[Depends(require_private_context)])
