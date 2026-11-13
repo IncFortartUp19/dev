@@ -1,4 +1,5 @@
 "use client";
+import { ProjectDomain } from "./project-domain";
 
 import {
   useEffect,
@@ -959,15 +960,7 @@ export function ConnectedCampus() {
                     rows={4}
                   />
                 </label>
-                <label>
-                  Àmbit
-                  <input
-                    name="category"
-                    required
-                    maxLength={100}
-                    defaultValue="Innovació"
-                  />
-                </label>
+<ProjectDomain />
               </>
             )}
             {form === "submission" && (

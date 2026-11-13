@@ -1,4 +1,5 @@
 "use client";
+import { ProjectDomain } from "./project-domain";
 
 import {
   useEffect,
@@ -1201,17 +1202,7 @@ export default function Campus() {
                   rows={4}
                 />
               </label>
-              <label>
-                Àmbit
-                <select name="category">
-                  <option>Sostenibilitat</option>
-                  <option>Tecnologia</option>
-                  <option>Comunitat</option>
-                  <option>Salut i benestar</option>
-                  <option>Disseny</option>
-                  <option>Altres</option>
-                </select>
-              </label>
+<ProjectDomain />
               <label>
                 Companys d’equip
                 <input

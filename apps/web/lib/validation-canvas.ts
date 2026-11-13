@@ -7,12 +7,12 @@ export const canvasFields = [
   {
     key: "problem",
     label: "Problema",
-    help: "Quina dificultat concreta has observat? Separa els fets de les suposicions.",
+    help: "Quina dificultat, pregunta de recerca o intenció creativa vols explorar? Separa observacions i suposicions.",
   },
   {
     key: "audience",
     label: "Públic inicial",
-    help: "Qui té aquest problema i com el resol avui? Tria un grup concret.",
+    help: "A qui s’adreça la proposta? Pot ser un públic, una comunitat o les persones que participaran en la recerca.",
   },
   {
     key: "hypothesis",
@@ -22,7 +22,7 @@ export const canvasFields = [
   {
     key: "experiment",
     label: "Proper experiment",
-    help: "Quina prova petita pots fer abans de construir més producte?",
+    help: "Quina prova petita pots fer? Pot ser una entrevista, un assaig, una maqueta, un experiment o una mostra artística.",
   },
   {
     key: "criterion",

@@ -64,3 +64,5 @@ La proposta de continuïtat de Campus cap a validació i acompanyament és a [la
 [Circuit de documents privats](docs/product/private-document-pipeline.md): càrrega en quarantena, consumidor Service Bus separat i descàrrega autoritzada amb versió/checksum; deshabilitat per defecte fins a validar la integració Azure.
 
 [Portal privat, context MFA i validació del pilot](docs/product/private-pilot-validation.md): interfície `/private`, accés reforçat al servidor i resultat de la comprovació real de prerequisits Azure.
+
+[Diversitat de projectes](docs/product/project-diversity.md) defineix l’obertura a recerca, arts, iniciatives socials i projectes interdisciplinaris. Campus ofereix un àmbit lliure amb suggeriments a la creació de projectes.
