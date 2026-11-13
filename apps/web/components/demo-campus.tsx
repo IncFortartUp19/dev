@@ -456,6 +456,9 @@ export default function Campus() {
               )}
             </button>
           ))}
+          <a className="nav-item" href="/projectes" title="Direcció de projectes">
+            <LayoutDashboard size={19} aria-hidden="true" /> Direcció de projectes
+          </a>
           <a className="nav-item" href="/private">
             <LockKeyhole size={19} /> Documents privats
           </a>
@@ -526,9 +529,6 @@ export default function Campus() {
           <div className="topbar-actions">
             <a className="text-button" href="/lab">
               Laboratori
-            </a>
-            <a className="text-button" href="/projectes">
-              Direcció de projectes
             </a>
             <a href="/campus" className="text-button connected-link">
               Campus compartit <ArrowUpRight size={14} />

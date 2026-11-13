@@ -137,7 +137,12 @@ export function ProjectPlanner() {
         </div>
         <form onSubmit={addTask} className={styles.addTask}>
           <label className={styles.field}>Nova tasca<input name="title" maxLength={120} required /></label>
-          <label className={styles.field}>Fase<select name="phase">{phases.map((phase) => <option key={phase}>{phase}</option>)}</select></label>
+          <div className={styles.field}>
+            <label htmlFor="new-task-phase">Fase</label>
+            <select id="new-task-phase" name="phase">
+              {phases.map((phase) => <option key={phase}>{phase}</option>)}
+            </select>
+          </div>
           <button className={styles.secondary}>Afegeix</button>
         </form>
       </section>
