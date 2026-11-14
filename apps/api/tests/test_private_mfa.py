@@ -17,6 +17,7 @@ def test_private_access_requires_the_configured_signed_context(signed_api, claim
     for path in (
         "/v1/private-access",
         "/v1/vaults",
+        "/v1/idea-drafts",
         f"/v1/vaults/{uuid4()}/documents",
         f"/v1/vaults/{uuid4()}/documents/{uuid4()}/content",
     ):
