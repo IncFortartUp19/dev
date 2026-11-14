@@ -233,6 +233,7 @@ class ScanReceipt(Base):
         ),
     )
 
+
 class IdeaDraft(Base):
     __tablename__ = "idea_drafts"
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=identifier)
