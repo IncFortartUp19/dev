@@ -237,7 +237,7 @@ class ScanReceipt(Base):
 class IdeaDraft(Base):
     __tablename__ = "idea_drafts"
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=identifier)
-    owner_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
+    owner_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
     question: Mapped[str] = mapped_column(String(2000))
     intention: Mapped[str] = mapped_column(String(3000), default="")
     next_test: Mapped[str] = mapped_column(String(3000), default="")
