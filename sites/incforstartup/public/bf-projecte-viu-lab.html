@@ -32,7 +32,7 @@ one:{name:"Validar la proposta 1-of-1",question:"Les persones entenen i valoren 
 brand:{name:"Explorar el posicionament BF90",question:"La identitat BF90 — Story / Built To Be Different és clara i diferenciadora?",method:"Comparar de manera controlada dues propostes visuals de narrativa de marca.",criterion:"Documentar percepció de marca i coherència dels missatges."},
 supply:{name:"Comprovar viabilitat de confecció",question:"És possible elaborar peces úniques amb el nivell de qualitat i cost desitjats?",method:"Preparar fitxa tècnica conceptual i consultar professionals amb autorització.",criterion:"Obtenir limitacions, rangs de cost i condicions de producció, sense compromís de compra."}};
 const e=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const btn=(label,action,secondary=false,extra="")=>'<button class="btn '+(secondary?'secondary':'')+'" data-action="'+action+'" '+extra+'>'+label+'</button>';
+const btn=(label,action,secondary=false,extra="")=>'<button type="button" class="btn '+(secondary?'secondary':'')+'" data-action="'+action+'" '+extra+'>'+label+'</button>';
 function store(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch{message="No s'ha pogut desar en aquest navegador."}}
 function event(text){state.events.unshift({at:new Date().toLocaleString("ca-ES"),text});store()}
 const current=()=>state.experiments.find(x=>x.id===state.activeId);
