@@ -76,7 +76,6 @@ def test_drafts_respect_signed_oidc(signed_api):
     assert no_token.status_code == 401
 
 
-
 def test_postgres_rls_filters_sql_and_rejects_forged_owner(protected_api):
     import re
 
