@@ -1,5 +1,11 @@
 from uuid import uuid4
+
+import pytest
 from sqlalchemy import text
+from sqlalchemy.exc import DBAPIError
+from sqlalchemy.orm import Session
+
+from campus_api.db import bind_actor
 
 def test_owner_only_private_drafts_and_resume(api):
     first = api.request("POST", "/idea-drafts", "alice", json={
@@ -12,14 +18,18 @@ def test_owner_only_private_drafts_and_resume(api):
     draft_id = item["id"]
     assert [row["id"] for row in api.request("GET", "/idea-drafts", "alice").json()] == [draft_id]
     assert api.request("GET", f"/idea-drafts/{draft_id}", "bob").status_code == 404
-    assert api.request("POST", f"/idea-drafts/{draft_id}", "bob", json={"question": "Robar"}).status_code == 404
+    denied = api.request(
+        "POST", f"/idea-drafts/{draft_id}", "bob", json={"question": "Robar"}
+    )
+    assert denied.status_code == 404
     assert api.request("GET", "/idea-drafts", "bob").json() == []
     changed = api.request("POST", f"/idea-drafts/{draft_id}", "alice", json={
         "question": "Què necessita el barri?", "intention": "Entendre els usos"
     })
     assert changed.status_code == 200
     assert changed.json()["intention"] == "Entendre els usos"
-    assert api.request("GET", f"/idea-drafts/{draft_id}", "alice").json()["next_test"] == ""
+    resumed = api.request("GET", f"/idea-drafts/{draft_id}", "alice").json()
+    assert resumed["next_test"] == ""
     assert api.request("GET", f"/idea-drafts/{uuid4()}", "alice").status_code == 404
 
 def test_drafts_reject_unauthenticated_overposting_and_invalid_input(api):
@@ -38,11 +48,19 @@ def test_draft_rls_is_forced(api):
     if api.app.state.engine.dialect.name != "postgresql":
         return
     with api.app.state.engine.connect() as conn:
-        assert conn.execute(text("SELECT relrowsecurity, relforcerowsecurity FROM pg_class WHERE relname='idea_drafts'")).one() == (True, True)
+        flags = conn.execute(
+            text("SELECT relrowsecurity, relforcerowsecurity "
+                 "FROM pg_class WHERE relname='idea_drafts'")
+        ).one()
+        assert flags == (True, True)
 
 def test_drafts_respect_signed_oidc(signed_api):
     api, mint = signed_api
-    response = api.client.post("/v1/idea-drafts", json={"question": "Idea signada"}, headers={"Authorization": "Bearer " + mint()})
+    response = api.client.post(
+        "/v1/idea-drafts",
+        json={"question": "Idea signada"},
+        headers={"Authorization": "Bearer " + mint()},
+    )
     assert response.status_code == 201, response.text
     no_token = api.client.get("/v1/idea-drafts")
     assert no_token.status_code == 401
@@ -50,9 +68,6 @@ def test_drafts_respect_signed_oidc(signed_api):
 
 def test_postgres_rls_filters_sql_and_rejects_forged_owner(protected_api):
     import re
-    from sqlalchemy.exc import DBAPIError
-    from sqlalchemy.orm import Session
-    from campus_api.db import bind_actor
 
     api, limited, admin = protected_api
     with limited.connect() as conn:
@@ -77,7 +92,7 @@ def test_postgres_rls_filters_sql_and_rejects_forged_owner(protected_api):
         db.rollback()
     with Session(limited) as db:
         bind_actor(db, bob)
-        with __import__("pytest").raises(DBAPIError):
+        with pytest.raises(DBAPIError):
             db.execute(
                 text("INSERT INTO idea_drafts "
                      "(id, owner_id, question, intention, next_test, name, visibility, updated_at) "
