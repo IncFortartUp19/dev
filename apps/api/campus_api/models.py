@@ -232,3 +232,19 @@ class ScanReceipt(Base):
             name="fk_receipt_document_vault",
         ),
     )
+
+class IdeaDraft(Base):
+    __tablename__ = "idea_drafts"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=identifier)
+    owner_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
+    question: Mapped[str] = mapped_column(String(2000))
+    intention: Mapped[str] = mapped_column(String(3000), default="")
+    next_test: Mapped[str] = mapped_column(String(3000), default="")
+    name: Mapped[str] = mapped_column(String(120), default="")
+    visibility: Mapped[str] = mapped_column(String(12), default="private")
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
+    __table_args__ = (
+        CheckConstraint("visibility = 'private'", name="ck_idea_drafts_private"),
+        CheckConstraint("length(trim(question)) > 0", name="ck_idea_drafts_question"),
+        Index("ix_idea_drafts_owner_updated", "owner_id", "updated_at"),
+    )
