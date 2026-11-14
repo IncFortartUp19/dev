@@ -20,7 +20,7 @@ export async function privateLoginAction(data: FormData) {
     redirect("/login?next=/private&error=Configuration");
   await signIn(
     "campus-oidc",
-    { redirectTo: loginDestination(data.get("next")) },
+    { redirectTo: data.get("next") === "/idees" ? "/idees" : "/private" },
     { claims: privateClaims(config.privateContext) },
   );
 }
