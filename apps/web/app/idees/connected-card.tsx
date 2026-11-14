@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
-import { privateJson } from "../../lib/private-api";
+import { PrivateError, privateJson } from "../../lib/private-api";
 import { pendingIdeaFields, validateIdea, type IdeaInput } from "../../lib/idea-drafts";
 import styles from "./short-card.module.css";
 
@@ -26,6 +26,8 @@ export function ConnectedIdeaDrafts() {
   const [fields, setFields] = useState<IdeaInput>(blank);
   const [snapshot, setSnapshot] = useState(JSON.stringify(blank()));
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [needsStepUp, setNeedsStepUp] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -35,7 +37,12 @@ export function ConnectedIdeaDrafts() {
     let active = true;
     privateJson<ServerDraft[]>("idea-drafts")
       .then((rows) => { if (active) setDrafts(rows); })
-      .catch((e: unknown) => { if (active) setError(e instanceof Error ? e.message : "No es poden recuperar les idees."); })
+      .catch((e: unknown) => {
+        if (!active) return;
+        setLoadFailed(true);
+        setNeedsStepUp(e instanceof PrivateError && e.code === "step_up_required");
+        setError(e instanceof Error ? e.message : "No es poden recuperar les idees.");
+      })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, []);
@@ -61,7 +68,7 @@ export function ConnectedIdeaDrafts() {
   }
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (loading || saving) return;
+    if (loading || saving || loadFailed) return;
     const invalid = validateIdea(fields);
     if (invalid) { setError(invalid); return; }
     setSaving(true);
@@ -78,6 +85,7 @@ export function ConnectedIdeaDrafts() {
       setError("");
       setMessage("Esborrany desat al teu compte privat. No s'ha publicat ni compartit.");
     } catch (e) {
+      setNeedsStepUp(e instanceof PrivateError && e.code === "step_up_required");
       setError(e instanceof Error ? e.message : "No s'ha pogut desar. Els camps es conserven.");
     } finally {
       setSaving(false);
@@ -139,9 +147,13 @@ export function ConnectedIdeaDrafts() {
           </section>
           {dirty && <p className={styles.unsaved}>Tens canvis sense desar.</p>}
           {error && <p role="alert" className={styles.error}>{error}</p>}
+          {needsStepUp && (
+            <Link href="/login?next=/idees">Reforça l’autenticació per accedir a les idees</Link>
+          )}
+          {loadFailed && <p role="status">Desat desactivat perquè no s’ha pogut comprovar el compte.</p>}
           {message && <p role="status" className={styles.notice}>{message}</p>}
           <div className={styles.actions}>
-            <button className={styles.primary} type="submit" disabled={loading || saving}>
+            <button className={styles.primary} type="submit" disabled={loading || saving || loadFailed}>
               {saving ? "Desant..." : "Desa al compte privat"}
             </button>
             <span>La visibilitat es manté privada.</span>
