@@ -46,3 +46,45 @@ def test_drafts_respect_signed_oidc(signed_api):
     assert response.status_code == 201, response.text
     no_token = api.client.get("/v1/idea-drafts")
     assert no_token.status_code == 401
+
+
+def test_postgres_rls_filters_sql_and_rejects_forged_owner(protected_api):
+    import re
+    from sqlalchemy.exc import DBAPIError
+    from sqlalchemy.orm import Session
+    from campus_api.db import bind_actor
+
+    api, limited, admin = protected_api
+    with limited.connect() as conn:
+        role = conn.scalar(text("SELECT current_user"))
+    assert re.fullmatch(r"rls_test_[0-9a-f]{32}", role)
+    with admin.begin() as conn:
+        conn.execute(text(f"GRANT SELECT, INSERT, UPDATE, DELETE ON idea_drafts TO {role}"))
+
+    alice = api.request("GET", "/me", "alice").json()["id"]
+    bob = api.request("GET", "/me", "bob").json()["id"]
+    created = api.request("POST", "/idea-drafts", "alice", json={"question": "Pregunta privada"})
+    assert created.status_code == 201, created.text
+    draft_id = created.json()["id"]
+    with Session(limited) as db:
+        assert db.execute(text("SELECT id FROM idea_drafts")).all() == []
+        bind_actor(db, bob)
+        assert db.execute(text("SELECT id FROM idea_drafts")).all() == []
+        assert db.execute(
+            text("UPDATE idea_drafts SET question='No autoritzat' WHERE id=:id"),
+            {"id": draft_id},
+        ).rowcount == 0
+        db.rollback()
+    with Session(limited) as db:
+        bind_actor(db, bob)
+        with __import__("pytest").raises(DBAPIError):
+            db.execute(
+                text("INSERT INTO idea_drafts "
+                     "(id, owner_id, question, intention, next_test, name, visibility, updated_at) "
+                     "VALUES (:id, :owner, 'Falsificat', '', '', '', 'private', CURRENT_TIMESTAMP)"),
+                {"id": str(uuid4()), "owner": alice},
+            )
+        db.rollback()
+    with Session(limited) as db:
+        bind_actor(db, alice)
+        assert db.execute(text("SELECT id FROM idea_drafts")).scalars().all() == [draft_id]
