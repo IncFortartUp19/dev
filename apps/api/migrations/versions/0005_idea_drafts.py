@@ -12,6 +12,7 @@ down_revision = "0004"
 branch_labels = None
 depends_on = None
 
+
 def upgrade():
     op.create_table(
         "idea_drafts",
@@ -31,24 +32,33 @@ def upgrade():
         actor = "NULLIF(current_setting('app.actor_id', true), '')"
         op.execute(sa.text("ALTER TABLE idea_drafts ENABLE ROW LEVEL SECURITY"))
         op.execute(sa.text("ALTER TABLE idea_drafts FORCE ROW LEVEL SECURITY"))
-        op.execute(sa.text(
-            f"CREATE POLICY idea_drafts_select ON idea_drafts FOR SELECT "
-            f"USING (owner_id = {actor})"
-        ))
-        op.execute(sa.text(
-            f"CREATE POLICY idea_drafts_insert ON idea_drafts FOR INSERT "
-            f"WITH CHECK (owner_id = {actor} AND visibility = 'private')"
-        ))
-        op.execute(sa.text(
-            f"CREATE POLICY idea_drafts_update ON idea_drafts FOR UPDATE "
-            f"USING (owner_id = {actor}) "
-            f"WITH CHECK (owner_id = {actor} AND visibility = 'private')"
-        ))
-        op.execute(sa.text("""DO $$ BEGIN
+        op.execute(
+            sa.text(
+                f"CREATE POLICY idea_drafts_select ON idea_drafts FOR SELECT "
+                f"USING (owner_id = {actor})"
+            )
+        )
+        op.execute(
+            sa.text(
+                f"CREATE POLICY idea_drafts_insert ON idea_drafts FOR INSERT "
+                f"WITH CHECK (owner_id = {actor} AND visibility = 'private')"
+            )
+        )
+        op.execute(
+            sa.text(
+                f"CREATE POLICY idea_drafts_update ON idea_drafts FOR UPDATE "
+                f"USING (owner_id = {actor}) "
+                f"WITH CHECK (owner_id = {actor} AND visibility = 'private')"
+            )
+        )
+        op.execute(
+            sa.text("""DO $ BEGIN
             IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'incfs_api') THEN
                 GRANT SELECT, INSERT, UPDATE ON idea_drafts TO incfs_api;
             END IF;
-        END $$"""))
+        END $""")
+        )
+
 
 def downgrade():
     op.drop_index("ix_idea_drafts_owner_updated", table_name="idea_drafts")
