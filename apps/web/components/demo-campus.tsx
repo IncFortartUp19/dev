@@ -456,6 +456,9 @@ export default function Campus() {
               )}
             </button>
           ))}
+          <a className="nav-item" href="/idees">
+            <Lightbulb size={19} /> Comença una idea
+          </a>
           <a className="nav-item" href="/private">
             <LockKeyhole size={19} /> Documents privats
           </a>

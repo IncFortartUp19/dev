@@ -41,11 +41,13 @@ test("login configuration fails closed and preserves the exact issuer", () => {
 test("login destinations cannot redirect off-site", () => {
   assert.equal(loginDestination("/campus/join"), "/campus/join");
   assert.equal(loginDestination("/private"), "/private");
+  assert.equal(loginDestination("/idees"), "/idees");
   for (const value of [
     "https://evil.example",
     "//evil.example",
     "/campus/join?token=secret",
     "/private?redirect=https://evil.example",
+    "/idees?redirect=https://evil.example",
     null,
   ])
     assert.equal(loginDestination(value), "/campus");

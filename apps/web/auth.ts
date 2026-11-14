@@ -64,7 +64,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth(() => {
           const target = new URL(url, origin);
           if (
             target.origin === origin &&
-            ["/campus", "/campus/join", "/login", "/private"].includes(
+            ["/campus", "/campus/join", "/login", "/private", "/idees"].includes(
               target.pathname,
             )
           )

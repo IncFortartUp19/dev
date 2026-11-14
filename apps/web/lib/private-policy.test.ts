@@ -20,6 +20,11 @@ test("private proxy allows only scoped metadata, upload and download routes", ()
     ["vaults", id + "%2f", "documents"],
   ])
     assert.equal(privateRoute("GET", path), null);
+  assert.equal(privateRoute("GET", ["idea-drafts"]), "json");
+  assert.equal(privateRoute("POST", ["idea-drafts"]), "json");
+  assert.equal(privateRoute("POST", ["idea-drafts", id]), "json");
+  assert.equal(privateRoute("GET", ["idea-drafts", id]), "json");
+  assert.equal(privateRoute("GET", ["idea-drafts", "invalid"]), null);
   assert.equal(privateRoute("DELETE", ["vaults", id]), null);
   assert.deepEqual(JSON.parse(privateClaims("c1")), {
     access_token: { acrs: { essential: true, value: "c1" } },

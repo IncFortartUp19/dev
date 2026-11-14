@@ -14,13 +14,13 @@ export async function logoutAction() {
   await signOut({ redirectTo: "/login" });
 }
 
-export async function privateLoginAction() {
+export async function privateLoginAction(data: FormData) {
   const config = loginConfig();
   if (!config?.privateContext)
     redirect("/login?next=/private&error=Configuration");
   await signIn(
     "campus-oidc",
-    { redirectTo: "/private" },
+    { redirectTo: data.get("next") === "/idees" ? "/idees" : "/private" },
     { claims: privateClaims(config.privateContext) },
   );
 }

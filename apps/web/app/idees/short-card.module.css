@@ -1,0 +1,30 @@
+.page{min-height:100vh;max-width:1300px;margin:auto;padding:clamp(18px,4vw,46px);color:#f1f5f5}
+.header{padding:clamp(24px,5vw,58px);border:1px solid #31414d;border-radius:22px;background:radial-gradient(circle at 85% 15%,#243f4a,#121b27 65%);margin-bottom:20px}
+.back{display:inline-block;margin-bottom:25px;color:#a9dacf;text-decoration:underline}
+.kicker{font-size:11px;letter-spacing:.18em;color:#9fdbcc;font-weight:700}
+.header h1{font-size:clamp(2.1rem,5vw,4rem);letter-spacing:-.06em;margin:12px 0}
+.header p{font-size:1rem;color:#c8d3d7;line-height:1.7}
+.layout{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:18px}
+.sidebar,.card{background:#111b27;border:1px solid #344553;border-radius:18px;padding:clamp(18px,3vw,32px)}
+.sidebar{align-self:start;display:grid;gap:12px}
+.sidebar h2{font-size:1.25rem}
+.sidebar p,.sidebar small{color:#b2c0c7;line-height:1.5}
+.sidebar button{width:100%;text-align:left;border-radius:10px;padding:12px}
+.secondary{border:1px solid #617b83;background:#203441;color:#eef6f6}
+.draft,.chosen{border:1px solid #3a5260;background:#182a37;color:#f3f6f7;display:grid;gap:6px;overflow-wrap:anywhere}
+.chosen{border-color:#a4eadb;background:#1a403f}
+.card{display:grid;gap:20px}
+.cardHeading{display:flex;justify-content:space-between;gap:15px;align-items:start}
+.cardHeading h2{font-size:1.7rem;margin-top:8px}
+.private{background:#24413d;color:#c2f8e6;border-radius:999px;padding:8px 12px;font-size:12px;white-space:nowrap}
+.card label{display:grid;gap:8px;font-size:15px;font-weight:700}
+.card label small{color:#b2c7cf;font-size:12px;font-weight:400}
+.card input,.card textarea{width:100%;background:#1c2c3a;border:1px solid #647985;border-radius:9px;color:#f6fbff;padding:13px;font-size:15px;font-weight:400;resize:vertical}
+.card input::placeholder,.card textarea::placeholder{color:#a1b3bc}
+.pending{background:#1b3039;border-radius:12px;border:1px solid #385860;padding:16px}
+.pending p{color:#c0d1d7;margin-top:8px;line-height:1.5}
+.unsaved{color:#ffcf85}.error{color:#ffb7b7}.notice{color:#a7e8c9}
+.actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.actions span{font-size:12px;color:#b9c7cc}
+.primary{background:#b2e7d7;color:#102b30;font-weight:800;border-radius:10px;padding:14px 20px}
+@media(max-width:740px){.layout{grid-template-columns:1fr}.cardHeading{flex-wrap:wrap}}

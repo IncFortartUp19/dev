@@ -25,7 +25,7 @@ def verify_runtime_database(engine, *, scanner=False, documents=False):
             FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
             WHERE n.nspname = 'public'
               AND c.relname IN ('project_vaults', 'vault_memberships', 'vault_events',
-                                'vault_documents', 'document_scan_receipts')
+                                'vault_documents', 'document_scan_receipts', 'idea_drafts')
         """)
         ).all()
         can_create = connection.scalar(
@@ -63,7 +63,7 @@ def verify_runtime_database(engine, *, scanner=False, documents=False):
             or (scanner and api_member)
             or (documents and not api_member)
             or ((scanner or documents) and not active)
-            or len(rows) != 5
+            or len(rows) != 6
             or any(not r.relrowsecurity or not r.relforcerowsecurity or r.owns for r in rows)
         ):
             raise RuntimeError("Unsafe database role or missing forced vault RLS")

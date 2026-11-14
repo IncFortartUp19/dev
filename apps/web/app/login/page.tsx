@@ -35,7 +35,7 @@ export default async function Login({
         {configured ? (
           <form
             action={
-              params.next === "/private" && loginConfig()?.privateContext
+              (params.next === "/private" || params.next === "/idees") && loginConfig()?.privateContext
                 ? privateLoginAction
                 : loginAction
             }

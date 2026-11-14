@@ -22,6 +22,9 @@ export function privateRoute(
   )
     return "json";
   if (method === "POST" && joined === "vaults") return "json";
+  if ((method === "GET" || method === "POST") &&
+      (joined === "idea-drafts" || new RegExp("^idea-drafts/" + id + "$").test(joined)))
+    return "json";
   return null;
 }
 export function privateClaims(context: string): string {
