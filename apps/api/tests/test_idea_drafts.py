@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 from campus_api.db import bind_actor
 
 
-
 def test_owner_only_private_drafts_and_resume(api):
     first = api.request(
         "POST",
