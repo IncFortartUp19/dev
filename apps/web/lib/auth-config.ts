@@ -71,5 +71,5 @@ export function loginConfig(
 }
 
 export function loginDestination(value: unknown): string {
-  return value === "/campus/join" || value === "/private" ? value : "/campus";
+  return value === "/campus/join" || value === "/private" || value === "/idees" ? value : "/campus";
 }
