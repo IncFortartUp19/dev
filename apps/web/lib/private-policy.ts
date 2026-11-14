@@ -22,6 +22,31 @@ export function privateRoute(
   )
     return "json";
   if (method === "POST" && joined === "vaults") return "json";
+  if ((method === "GET" || method === "POST") &&
+      (joined === "idea-drafts" || new RegExp(`^idea-drafts/${id}const id =
+  "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
+export const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024;
+export function privateRoute(
+  method: string,
+  path: string[],
+): "json" | "upload" | "download" | null {
+  if (path.some((p) => !p || /[\\/.%?#]/.test(p))) return null;
+  const joined = path.join("/");
+  if (
+    method === "GET" &&
+    new RegExp(`^vaults/${id}/documents/${id}/content$`).test(joined)
+  )
+    return "download";
+  if (method === "POST" && new RegExp(`^vaults/${id}/documents$`).test(joined))
+    return "upload";
+  if (
+    method === "GET" &&
+    (joined === "private-access" ||
+      joined === "vaults" ||
+      new RegExp(`^vaults/${id}(?:/documents)?$`).test(joined))
+  )
+    return "json";
+).test(joined))) return "json";
   return null;
 }
 export function privateClaims(context: string): string {
