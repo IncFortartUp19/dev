@@ -16,6 +16,7 @@ export function IdeaDraftEditor() {
   const [fields, setFields] = useState<IdeaInput>(blank);
   const [savedSnapshot, setSavedSnapshot] = useState(JSON.stringify(blank()));
   const [ready, setReady] = useState(false);
+  const [storageHealthy, setStorageHealthy] = useState(true);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const dirty = JSON.stringify(fields) !== savedSnapshot;
@@ -27,6 +28,7 @@ export function IdeaDraftEditor() {
       setDrafts(parseIdeaDrafts(window.localStorage.getItem(IDEA_STORAGE_KEY)));
     } catch {
       setError("No es poden llegir els esborranys locals. No se n'ha modificat cap.");
+      setStorageHealthy(false);
     } finally {
       setReady(true);
     }
@@ -57,6 +59,9 @@ export function IdeaDraftEditor() {
   }
   function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!storageHealthy) {
+      setError("Desat bloquejat: les dades locals existents no es poden llegir."); return;
+    }
     const validation = validateIdea(fields);
     if (validation) { setError(validation); return; }
     if (!selectedId && drafts.length >= MAX_IDEA_DRAFTS) {
@@ -136,7 +141,7 @@ export function IdeaDraftEditor() {
           {error && <p role="alert" className={styles.error}>{error}</p>}
           {notice && <p role="status" className={styles.notice}>{notice}</p>}
           <div className={styles.actions}>
-            <button className={styles.primary} type="submit" disabled={!ready}>Desa l'esborrany</button>
+            <button className={styles.primary} type="submit" disabled={!ready || !storageHealthy}>Desa l'esborrany</button>
             <span>Desar no publica ni comparteix la idea.</span>
           </div>
         </form>
