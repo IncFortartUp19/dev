@@ -61,7 +61,7 @@ export function ConnectedIdeaDrafts() {
   }
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (loading || saving || error) return;
+    if (loading || saving) return;
     const invalid = validateIdea(fields);
     if (invalid) { setError(invalid); return; }
     setSaving(true);
