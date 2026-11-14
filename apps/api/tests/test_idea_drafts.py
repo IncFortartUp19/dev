@@ -96,7 +96,8 @@ def test_postgres_rls_filters_sql_and_rejects_forged_owner(protected_api):
             db.execute(
                 text("INSERT INTO idea_drafts "
                      "(id, owner_id, question, intention, next_test, name, visibility, updated_at) "
-                     "VALUES (:id, :owner, 'Falsificat', '', '', '', 'private', CURRENT_TIMESTAMP)"),
+                     "VALUES (:id, :owner, 'Falsificat', '', '', '', "
+                     "'private', CURRENT_TIMESTAMP)"),
                 {"id": str(uuid4()), "owner": alice},
             )
         db.rollback()
