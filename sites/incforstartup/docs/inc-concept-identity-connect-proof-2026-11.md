@@ -1,9 +1,9 @@
 # IncForStartUp — Direcció conceptual consolidada (14-11-2026)
 
-**Tipus:** decisions de producte aprovades a la conversa; NO equival a programari implementat, resultats de recerca, assessorament legal, evidència empírica ni contingut autoritzat per entrenar models.  
-**Origen:** revisió i iteracions conceptuals amb la persona fundadora, 14/11/2026.  
-**Estat:** aprovat com a direcció exploratòria, pendent de disseny, criteris d'acceptació i validació amb usuaris.  
-**Àmbit:** IncForStartUp. **No barrejar amb BF**.  
+**Tipus:** decisions de producte aprovades a la conversa; NO equival a programari implementat, resultats de recerca, assessorament legal, evidència empírica ni contingut autoritzat per entrenar models.
+**Origen:** revisió i iteracions conceptuals amb la persona fundadora, 14/11/2026.
+**Estat:** aprovat com a direcció exploratòria, pendent de disseny, criteris d'acceptació i validació amb usuaris.
+**Àmbit:** IncForStartUp. **No barrejar amb BF**.
 
 ## 1. Decisions de producte
 
